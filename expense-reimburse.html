@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>费用报销与预算控制 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--bg:#0b1020;--panel:rgba(255,255,255,.06);--panel2:rgba(255,255,255,.08);--line:rgba(148,163,184,.18);--text:#e5e7eb;--muted:#a8b3cf;--a:#f97316;--b:#a855f7;--c:#22c55e;--d:#38bdf8;--shadow:0 18px 46px rgba(0,0,0,.42)}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;background:radial-gradient(900px 520px at 12% 6%,rgba(249,115,22,.20),transparent 55%),radial-gradient(900px 520px at 88% 10%,rgba(168,85,247,.18),transparent 58%),radial-gradient(820px 520px at 60% 88%,rgba(56,189,248,.14),transparent 58%),linear-gradient(180deg,#060914 0%,#0b1020 40%,#0b1020 100%);color:var(--text)}
+      .navbar{background:rgba(11,16,32,.62)!important;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+      .navbar-brand,.nav-link{color:rgba(226,232,240,.92)!important}
+      .nav-link{opacity:.78}
+      .nav-link:hover{opacity:1}
+      .nav-link.active{opacity:1;font-weight:900}
+      .page{padding-top:86px;padding-bottom:52px}
+      .hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(168,85,247,.16),rgba(34,197,94,.10));border-radius:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+      .hero::after{content:"";position:absolute;inset:-2px;background:radial-gradient(520px 220px at 18% 0%,rgba(249,115,22,.24),transparent 58%),radial-gradient(520px 220px at 88% 0%,rgba(168,85,247,.20),transparent 60%);filter:blur(2px);pointer-events:none}
+      .hero .in{position:relative}
+      .hero h1{font-weight:900;letter-spacing:.2px}
+      .hero p{color:rgba(226,232,240,.82);max-width:78ch}
+      .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.16);color:rgba(226,232,240,.86);font-weight:800}
+      .chip i{color:rgba(56,189,248,.9)}
+      .section{scroll-margin-top:96px;opacity:0;transform:translateY(14px);transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{opacity:1;transform:translateY(0)}
+      .glass{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:18px;box-shadow:0 12px 34px rgba(0,0,0,.28)}
+      .glass .hd{padding:14px 16px;border-bottom:1px solid rgba(148,163,184,.18);display:flex;align-items:end;justify-content:space-between;gap:12px}
+      .glass .bd{padding:16px}
+      .kpi{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.05));border:1px solid rgba(148,163,184,.18);border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.26)}
+      .kpi .t{color:rgba(226,232,240,.78);font-weight:800;font-size:13px}
+      .kpi .v{font-size:26px;font-weight:900}
+      .kpi .s{color:rgba(148,163,184,.86);font-size:13px}
+      .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(2,6,23,.18);border:1px solid rgba(226,232,240,.14);color:rgba(226,232,240,.88);font-weight:800}
+      .pill .dot{width:10px;height:10px;border-radius:999px}
+      .dot.a{background:rgba(249,115,22,.9)}
+      .dot.b{background:rgba(168,85,247,.9)}
+      .dot.c{background:rgba(34,197,94,.9)}
+      .dot.d{background:rgba(56,189,248,.9)}
+      .btn-hot{background:linear-gradient(135deg,rgba(249,115,22,.90),rgba(168,85,247,.86));border:0;color:#0b1020;font-weight:900}
+      .btn-hot:hover{filter:brightness(1.03)}
+      .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(226,232,240,.18);color:rgba(226,232,240,.90);font-weight:900}
+      .btn-ghost:hover{background:rgba(255,255,255,.10);border-color:rgba(226,232,240,.22)}
+      .form-control,.form-select{background:rgba(2,6,23,.18)!important;color:rgba(226,232,240,.92)!important;border:1px solid rgba(226,232,240,.16)!important}
+      .form-control::placeholder{color:rgba(148,163,184,.80)}
+      .form-label{color:rgba(226,232,240,.86);font-weight:800}
+      .table{color:rgba(226,232,240,.92)}
+      .table thead th{background:rgba(255,255,255,.06)!important;border-bottom:1px solid rgba(226,232,240,.12)!important}
+      .table td,.table th{border-color:rgba(226,232,240,.10)!important}
+      .badge-soft{border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.16);color:rgba(226,232,240,.90);font-weight:900}
+      .timeline{position:relative;padding-left:14px}
+      .timeline::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,rgba(56,189,248,.6),rgba(168,85,247,.35),rgba(249,115,22,.55))}
+      .t-item{position:relative;padding:12px 12px 12px 18px;border:1px solid rgba(148,163,184,.18);border-radius:16px;background:rgba(255,255,255,.06)}
+      .t-item::before{content:"";position:absolute;left:-9px;top:16px;width:14px;height:14px;border-radius:999px;background:rgba(56,189,248,.92);box-shadow:0 0 0 4px rgba(56,189,248,.16)}
+      .t-item.warn::before{background:rgba(249,115,22,.92);box-shadow:0 0 0 4px rgba(249,115,22,.16)}
+      .t-item.ok::before{background:rgba(34,197,94,.92);box-shadow:0 0 0 4px rgba(34,197,94,.16)}
+      .t-title{font-weight:900}
+      .t-sub{color:rgba(148,163,184,.88);font-size:13px}
+      .meter{height:10px;background:rgba(226,232,240,.10);border-radius:999px;overflow:hidden}
+      .meter>span{display:block;height:100%;border-radius:999px}
+      .m-a{background:rgba(249,115,22,.86)}
+      .m-b{background:rgba(168,85,247,.86)}
+      .m-c{background:rgba(34,197,94,.86)}
+      .m-d{background:rgba(56,189,248,.86)}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="dashboard.html"><i class="bi bi-bank2 me-2"></i>财务信息数据管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">仪表盘</a></li>
+            <li class="nav-item"><a class="nav-link" href="vouchers-ledger.html">凭证总账</a></li>
+            <li class="nav-item"><a class="nav-link" href="ar-ap.html">往来应收应付</a></li>
+            <li class="nav-item"><a class="nav-link active" href="expense-reimburse.html">费用报销</a></li>
+            <li class="nav-item"><a class="nav-link" href="assets.html">固定资产</a></li>
+            <li class="nav-item"><a class="nav-link" href="tax-invoice.html">税务发票</a></li>
+            <li class="nav-item"><a class="nav-link" href="reports.html">报表分析</a></li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <a class="btn btn-ghost btn-sm px-3" href="#submit"><i class="bi bi-plus-circle me-1"></i>提交</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#approve"><i class="bi bi-person-check me-1"></i>审批</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#policy"><i class="bi bi-shield-check me-1"></i>制度</a>
+            <a class="btn btn-ghost btn-sm px-3" href="login.html?logout=1"><i class="bi bi-box-arrow-right me-1"></i>退出登录</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero p-4 mb-4 section" id="top">
+          <div class="in">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+              <div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <span class="chip"><i class="bi bi-calendar3"></i>期间：2026-04</span>
+                  <span class="chip"><i class="bi bi-graph-up-arrow"></i>预算口径：部门+费用类型</span>
+                  <span class="chip"><i class="bi bi-link-45deg"></i>关联：报销单→付款→凭证</span>
+                </div>
+                <h1 class="h2 mb-2">费用报销与预算控制</h1>
+                <p class="mb-0">以“申请—审批—付款—入账”四步闭环管理费用支出。系统将预算占用、票据合规与审批链路放在同一视图中，便于快速定位异常与控制超支。</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-hot px-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#ocForm" aria-controls="ocForm"><i class="bi bi-file-earmark-plus me-1"></i>新建报销单</button>
+                <a class="btn btn-ghost px-3" href="#stats"><i class="bi bi-pie-chart me-1"></i>费用统计</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xl-4">
+            <div class="row g-3 section">
+              <div class="col-12">
+                <div class="kpi p-3">
+                  <div class="t">本月已报销（含税）</div>
+                  <div class="v">¥ 238,460</div>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div class="s">已入账：¥ 196,300</div>
+                    <span class="badge rounded-pill badge-soft"><i class="bi bi-check2-circle me-1"></i>入账率 82%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="kpi p-3">
+                  <div class="t">待审批</div>
+                  <div class="v">12 单</div>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div class="s">预计支出：¥ 41,900</div>
+                    <span class="badge rounded-pill badge-soft"><i class="bi bi-hourglass-split me-1"></i>需处理</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="kpi p-3">
+                  <div class="t">预算占用（市场部）</div>
+                  <div class="v">¥ 96,800</div>
+                  <div class="s mt-2">预算：¥ 120,000</div>
+                  <div class="meter mt-2"><span class="m-a" style="width:81%"></span></div>
+                  <div class="d-flex justify-content-between mt-2 small" style="color:rgba(148,163,184,.88)"><span>已用 81%</span><span>剩余 ¥ 23,200</span></div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="glass">
+                  <div class="hd">
+                    <div>
+                      <div class="fw-bold">审批待办</div>
+                      <div class="text-muted small">子功能：审批流与预算校验</div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" type="button" id="btnOneKey"><i class="bi bi-lightning-charge me-1"></i>一键催办</button>
+                  </div>
+                  <div class="bd">
+                    <div class="timeline d-grid gap-2">
+                      <div class="t-item">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                          <div class="t-title">ER-202604-0187 / 差旅报销</div>
+                          <span class="badge rounded-pill text-bg-primary">部门负责人</span>
+                        </div>
+                        <div class="t-sub mt-1">申请人：刘凯｜金额：¥ 4,860｜预算：销售部-差旅</div>
+                      </div>
+                      <div class="t-item warn">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                          <div class="t-title">ER-202604-0192 / 市场推广</div>
+                          <span class="badge rounded-pill text-bg-warning">预算预警</span>
+                        </div>
+                        <div class="t-sub mt-1">申请人：王珊｜金额：¥ 12,300｜预算：市场部-推广</div>
+                      </div>
+                      <div class="t-item">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                          <div class="t-title">ER-202604-0201 / 办公用品</div>
+                          <span class="badge rounded-pill text-bg-secondary">财务复核</span>
+                        </div>
+                        <div class="t-sub mt-1">申请人：陈雯｜金额：¥ 1,280｜票据：专票</div>
+                      </div>
+                      <div class="t-item ok">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                          <div class="t-title">ER-202604-0179 / 设备维修</div>
+                          <span class="badge rounded-pill text-bg-success">已通过</span>
+                        </div>
+                        <div class="t-sub mt-1">申请人：赵明｜金额：¥ 7,900｜已生成付款指令</div>
+                      </div>
+                    </div>
+                    <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>待办按节点分流：部门审批→预算校验→财务复核→付款与入账。</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-8">
+            <section class="section" id="submit">
+              <div class="glass">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">报销申请与票据登记</div>
+                    <div class="text-muted small">子功能：报销申请、附件与票据要素登记</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="pill"><span class="dot d"></span>票据校验</span>
+                    <span class="pill"><span class="dot b"></span>预算占用</span>
+                    <span class="pill"><span class="dot c"></span>付款联动</span>
+                  </div>
+                </div>
+                <div class="bd">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-5">
+                      <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)">
+                        <div class="fw-bold mb-2">快速规则提示</div>
+                        <div class="d-grid gap-2 small" style="color:rgba(148,163,184,.92)">
+                          <div class="d-flex align-items-start gap-2"><i class="bi bi-check2-circle text-success"></i><div>专票：需录入发票号码、开票日期、税额，便于抵扣与税额测算联动。</div></div>
+                          <div class="d-flex align-items-start gap-2"><i class="bi bi-shield-check text-info"></i><div>差旅：交通/住宿/补贴分项录入，自动归集到“差旅费”科目口径。</div></div>
+                          <div class="d-flex align-items-start gap-2"><i class="bi bi-exclamation-triangle text-warning"></i><div>预算超支：允许提交但进入“预算预警”节点，需补充说明与二级审批。</div></div>
+                          <div class="d-flex align-items-start gap-2"><i class="bi bi-lock text-secondary"></i><div>付款方式：对公转账需绑定收款账户；个人垫付需登记收款人信息。</div></div>
+                        </div>
+                        <div class="mt-3 d-grid">
+                          <button class="btn btn-hot" type="button" data-bs-toggle="offcanvas" data-bs-target="#ocForm" aria-controls="ocForm"><i class="bi bi-pencil-square me-1"></i>填写报销单</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-7">
+                      <div class="table-responsive">
+                        <table class="table align-middle mb-0" id="tblER">
+                          <thead>
+                            <tr>
+                              <th style="width:140px">单号</th>
+                              <th>事项</th>
+                              <th style="width:120px">申请人</th>
+                              <th style="width:120px">部门</th>
+                              <th style="width:130px" class="text-end">金额</th>
+                              <th style="width:120px">状态</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0206</td>
+                              <td>参加行业展会差旅（上海）</td>
+                              <td>刘凯</td>
+                              <td>销售部</td>
+                              <td class="text-end">4,860</td>
+                              <td><span class="badge rounded-pill text-bg-primary">部门审批</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0203</td>
+                              <td>市场推广物料制作</td>
+                              <td>王珊</td>
+                              <td>市场部</td>
+                              <td class="text-end">12,300</td>
+                              <td><span class="badge rounded-pill text-bg-warning">预算预警</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0201</td>
+                              <td>办公用品采购（打印耗材）</td>
+                              <td>陈雯</td>
+                              <td>行政部</td>
+                              <td class="text-end">1,280</td>
+                              <td><span class="badge rounded-pill text-bg-secondary">财务复核</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0199</td>
+                              <td>云服务订阅（4月）</td>
+                              <td>赵明</td>
+                              <td>研发部</td>
+                              <td class="text-end">9,800</td>
+                              <td><span class="badge rounded-pill text-bg-success">已入账</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0194</td>
+                              <td>设备维修与配件</td>
+                              <td>赵明</td>
+                              <td>生产部</td>
+                              <td class="text-end">7,900</td>
+                              <td><span class="badge rounded-pill text-bg-success">已付款</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0188</td>
+                              <td>客户招待与餐饮</td>
+                              <td>刘凯</td>
+                              <td>销售部</td>
+                              <td class="text-end">1,560</td>
+                              <td><span class="badge rounded-pill text-bg-success">已入账</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-bold">ER-202604-0181</td>
+                              <td>快递与邮寄费用</td>
+                              <td>陈雯</td>
+                              <td>行政部</td>
+                              <td class="text-end">420</td>
+                              <td><span class="badge rounded-pill text-bg-success">已入账</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="mt-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <button class="btn btn-ghost btn-sm" type="button" id="btnLinkVoucher"><i class="bi bi-link-45deg me-1"></i>关联凭证</button>
+                        <div class="text-muted small"><i class="bi bi-receipt me-1"></i>票据合规数据将用于税务页的进项统计与抵扣测算。</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="approve">
+              <div class="glass">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">审批流与付款联动</div>
+                    <div class="text-muted small">子功能：多级审批、付款指令与入账状态回写</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-ghost btn-sm" type="button" id="btnApprove"><i class="bi bi-check2-circle me-1"></i>批量通过</button>
+                    <button class="btn btn-ghost btn-sm" type="button" id="btnReject"><i class="bi bi-x-circle me-1"></i>退回补充</button>
+                    <button class="btn btn-ghost btn-sm" type="button" id="btnPay"><i class="bi bi-cash-stack me-1"></i>生成付款</button>
+                  </div>
+                </div>
+                <div class="bd">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                      <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)">
+                        <div class="fw-bold mb-2">流程节点</div>
+                        <div class="d-grid gap-2">
+                          <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2"><i class="bi bi-person-check" style="color:rgba(56,189,248,.95)"></i><span class="fw-semibold">部门负责人审批</span></div>
+                            <span class="badge rounded-pill badge-soft">SLA 1 天</span>
+                          </div>
+                          <div class="meter"><span class="m-d" style="width:68%"></span></div>
+                          <div class="d-flex align-items-center justify-content-between mt-2">
+                            <div class="d-flex align-items-center gap-2"><i class="bi bi-shield-exclamation" style="color:rgba(249,115,22,.95)"></i><span class="fw-semibold">预算预警复核</span></div>
+                            <span class="badge rounded-pill badge-soft">SLA 2 天</span>
+                          </div>
+                          <div class="meter"><span class="m-a" style="width:44%"></span></div>
+                          <div class="d-flex align-items-center justify-content-between mt-2">
+                            <div class="d-flex align-items-center gap-2"><i class="bi bi-journal-check" style="color:rgba(168,85,247,.95)"></i><span class="fw-semibold">财务复核与票据合规</span></div>
+                            <span class="badge rounded-pill badge-soft">SLA 1 天</span>
+                          </div>
+                          <div class="meter"><span class="m-b" style="width:78%"></span></div>
+                          <div class="d-flex align-items-center justify-content-between mt-2">
+                            <div class="d-flex align-items-center gap-2"><i class="bi bi-cash-coin" style="color:rgba(34,197,94,.95)"></i><span class="fw-semibold">付款与入账</span></div>
+                            <span class="badge rounded-pill badge-soft">T+1</span>
+                          </div>
+                          <div class="meter"><span class="m-c" style="width:56%"></span></div>
+                        </div>
+                        <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>节点进度展示用于定位阻塞环节，并与待办列表联动催办。</div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                      <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)">
+                        <div class="fw-bold mb-2">本月费用趋势</div>
+                        <canvas id="chartTrend" height="180"></canvas>
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                          <span class="pill"><span class="dot d"></span>差旅</span>
+                          <span class="pill"><span class="dot a"></span>市场推广</span>
+                          <span class="pill"><span class="dot b"></span>IT订阅</span>
+                          <span class="pill"><span class="dot c"></span>办公行政</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="stats">
+              <div class="glass">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">费用统计与预算分析</div>
+                    <div class="text-muted small">子功能：按部门/类型统计，识别超支与异常波动</div>
+                  </div>
+                  <span class="badge rounded-pill badge-soft"><i class="bi bi-clock-history me-1"></i>更新至 2026-04-29</span>
+                </div>
+                <div class="bd">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-5">
+                      <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)">
+                        <div class="fw-bold mb-2">费用结构（本月）</div>
+                        <canvas id="chartMix" height="200"></canvas>
+                        <div class="mt-3 text-muted small"><i class="bi bi-lightbulb me-1"></i>结构图用于快速判断“哪类费用推动了波动”。</div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-7">
+                      <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                          <thead>
+                            <tr>
+                              <th>部门</th>
+                              <th>预算</th>
+                              <th>已用</th>
+                              <th style="width:220px">占用进度</th>
+                              <th style="width:120px">状态</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="fw-semibold">市场部</td>
+                              <td>120,000</td>
+                              <td>96,800</td>
+                              <td><div class="meter"><span class="m-a" style="width:81%"></span></div></td>
+                              <td><span class="badge rounded-pill text-bg-warning">预警</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">销售部</td>
+                              <td>80,000</td>
+                              <td>54,200</td>
+                              <td><div class="meter"><span class="m-d" style="width:68%"></span></div></td>
+                              <td><span class="badge rounded-pill text-bg-primary">可控</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">研发部</td>
+                              <td>60,000</td>
+                              <td>37,600</td>
+                              <td><div class="meter"><span class="m-b" style="width:63%"></span></div></td>
+                              <td><span class="badge rounded-pill text-bg-primary">可控</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">行政部</td>
+                              <td>40,000</td>
+                              <td>18,900</td>
+                              <td><div class="meter"><span class="m-c" style="width:47%"></span></div></td>
+                              <td><span class="badge rounded-pill text-bg-success">良好</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">生产部</td>
+                              <td>55,000</td>
+                              <td>30,960</td>
+                              <td><div class="meter"><span class="m-d" style="width:56%"></span></div></td>
+                              <td><span class="badge rounded-pill text-bg-primary">可控</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-shield-check me-1"></i>预算表与审批节点联动，避免“已审批但超预算”的滞后问题。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="policy">
+              <div class="glass">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">报销制度与控制点</div>
+                    <div class="text-muted small">子功能：制度展示、风险控制点与常见问题提示</div>
+                  </div>
+                  <a class="btn btn-ghost btn-sm" href="#top"><i class="bi bi-arrow-up me-1"></i>返回顶部</a>
+                </div>
+                <div class="bd">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-7">
+                      <div class="accordion" id="accPolicy">
+                        <div class="accordion-item glass" style="border-radius:16px">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p1" aria-expanded="false" aria-controls="p1" style="background:transparent;color:rgba(226,232,240,.92)">
+                              <i class="bi bi-receipt me-2"></i>票据与合规要求
+                            </button>
+                          </h2>
+                          <div id="p1" class="accordion-collapse collapse" data-bs-parent="#accPolicy">
+                            <div class="accordion-body" style="color:rgba(148,163,184,.92)">
+                              发票需完整录入：发票号码、开票日期、销方名称与税号、含税金额与税额。专票用于抵扣测算时必须填写税额与税率；若为收据或无票支出，需要补充说明并走“合规例外”审批节点。
+                            </div>
+                          </div>
+                        </div>
+                        <div class="accordion-item glass mt-2" style="border-radius:16px">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p2" aria-expanded="false" aria-controls="p2" style="background:transparent;color:rgba(226,232,240,.92)">
+                              <i class="bi bi-cash-coin me-2"></i>付款方式与收款信息
+                            </button>
+                          </h2>
+                          <div id="p2" class="accordion-collapse collapse" data-bs-parent="#accPolicy">
+                            <div class="accordion-body" style="color:rgba(148,163,184,.92)">
+                              对公付款需绑定收款单位账户信息并与合同或订单一致；个人垫付报销需登记收款人姓名与账号，避免同名混淆。付款完成后自动回写状态，并生成可追溯的付款编号与凭证关联。
+                            </div>
+                          </div>
+                        </div>
+                        <div class="accordion-item glass mt-2" style="border-radius:16px">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p3" aria-expanded="false" aria-controls="p3" style="background:transparent;color:rgba(226,232,240,.92)">
+                              <i class="bi bi-graph-up me-2"></i>预算控制与预警
+                            </button>
+                          </h2>
+                          <div id="p3" class="accordion-collapse collapse" data-bs-parent="#accPolicy">
+                            <div class="accordion-body" style="color:rgba(148,163,184,.92)">
+                              报销提交时占用部门预算；若预算不足，进入“预算预警”节点并要求补充说明。财务复核阶段再次校验预算口径一致性，避免跨部门错归集导致的预算失真。
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                      <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)">
+                        <div class="fw-bold mb-2">常见问题</div>
+                        <div class="d-grid gap-2">
+                          <button class="btn btn-ghost text-start" type="button" id="faq1"><i class="bi bi-question-circle me-2"></i>报销金额与发票金额不一致如何处理？</button>
+                          <button class="btn btn-ghost text-start" type="button" id="faq2"><i class="bi bi-question-circle me-2"></i>同一张发票能否拆分到不同部门？</button>
+                          <button class="btn btn-ghost text-start" type="button" id="faq3"><i class="bi bi-question-circle me-2"></i>付款完成后为什么还显示“待入账”？</button>
+                        </div>
+                        <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>问题按钮用于演示提示弹窗，不涉及外部图片或文件上传。</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="ocForm" aria-labelledby="ocFormLabel" style="width:min(560px,92vw)">
+      <div class="offcanvas-header border-bottom" style="border-color:rgba(226,232,240,.14)!important">
+        <h5 class="offcanvas-title" id="ocFormLabel"><i class="bi bi-file-earmark-text me-2"></i>新建报销单</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="关闭"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">事项标题</label>
+            <input class="form-control" id="fTitle" placeholder="例如：参加行业展会差旅（上海）" value="参加行业展会差旅（上海）">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">申请人</label>
+            <select class="form-select" id="fUser">
+              <option selected>刘凯</option>
+              <option>王珊</option>
+              <option>陈雯</option>
+              <option>赵明</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">部门</label>
+            <select class="form-select" id="fDept">
+              <option selected>销售部</option>
+              <option>市场部</option>
+              <option>研发部</option>
+              <option>行政部</option>
+              <option>生产部</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">费用类型</label>
+            <select class="form-select" id="fType">
+              <option selected>差旅费</option>
+              <option>市场推广</option>
+              <option>办公行政</option>
+              <option>IT订阅</option>
+              <option>维修费</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">含税金额</label>
+            <input class="form-control" id="fAmount" value="4860">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">票据类型</label>
+            <select class="form-select" id="fBill">
+              <option selected>增值税专用发票</option>
+              <option>增值税普通发票</option>
+              <option>收据</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">发票号码</label>
+            <input class="form-control" id="fInvNo" value="01124567">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">开票日期</label>
+            <input class="form-control" id="fInvDate" value="2026-04-25">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">税率</label>
+            <select class="form-select" id="fRate">
+              <option>3%</option>
+              <option selected>6%</option>
+              <option>9%</option>
+              <option>13%</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label">税额</label>
+            <input class="form-control" id="fTax" value="275.09">
+          </div>
+          <div class="col-12">
+            <label class="form-label">备注说明</label>
+            <textarea class="form-control" rows="3" id="fMemo" placeholder="用于预算预警说明或合规例外说明">展会往返交通与住宿费用，附明细与行程单。</textarea>
+          </div>
+          <div class="col-12 d-grid gap-2">
+            <button class="btn btn-hot" type="button" id="btnSubmit"><i class="bi bi-send me-1"></i>提交并占用预算</button>
+            <button class="btn btn-ghost" type="button" id="btnSave"><i class="bi bi-save2 me-1"></i>保存草稿</button>
+          </div>
+          <div class="col-12 text-muted small"><i class="bi bi-shield-check me-1"></i>此页面不使用图片与文件上传，仅展示要素录入与流程联动。</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const authed = localStorage.getItem('fimds_auth') === '1';
+        if (!authed) {
+          const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
+          location.replace('login.html?next=' + next);
+          return;
+        }
+        function smoothScrollTo(targetId) {
+          const $t = $(targetId);
+          if (!$t.length) return;
+          const top = $t.offset().top - 88;
+          $('html, body').stop(true).animate({ scrollTop: top }, reduceMotion ? 0 : 520, 'swing');
+        }
+        $(document).on('click', 'a[href^=\"#\"]', function (e) {
+          const href = $(this).attr('href');
+          if (href && href.length > 1 && $(href).length) { e.preventDefault(); smoothScrollTo(href); }
+        });
+        const io = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) en.target.classList.add('in-view'); }); }, { threshold: 0.14 });
+        document.querySelectorAll('.section').forEach(function (el) { io.observe(el); });
+
+        function toast(message, kind) {
+          $('#toastDyn').remove();
+          const html = [
+            '<div id=\"toastDyn\" class=\"toast align-items-center text-bg-' + kind + ' border-0 position-fixed bottom-0 end-0 m-3\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" style=\"z-index:1080\">',
+            '  <div class=\"d-flex\">',
+            '    <div class=\"toast-body\"><i class=\"bi bi-info-circle me-2\"></i>' + message + '</div>',
+            '    <button type=\"button\" class=\"btn-close btn-close-white me-2 m-auto\" data-bs-dismiss=\"toast\" aria-label=\"关闭\"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+          $('body').append(html);
+          bootstrap.Toast.getOrCreateInstance(document.getElementById('toastDyn'), { delay: 2400 }).show();
+        }
+
+        $('#btnOneKey').on('click', function () { toast('已向节点处理人发送催办提醒（4条）', 'primary'); });
+        $('#btnLinkVoucher').on('click', function () { toast('已关联凭证：记-202604-031（报销入账）', 'success'); });
+        $('#btnApprove').on('click', function () { toast('批量审批通过：3单；待财务复核：1单', 'success'); });
+        $('#btnReject').on('click', function () { toast('已退回补充材料：票据要素缺失/预算说明不足', 'warning'); });
+        $('#btnPay').on('click', function () { toast('已生成付款指令：PAY-202604-11（对公2笔/个人1笔）', 'primary'); });
+        $('#faq1').on('click', function () { toast('可录入“差额原因”，并在财务复核节点核对明细与票据口径', 'secondary'); });
+        $('#faq2').on('click', function () { toast('允许拆分，但需保持税率与票据要素一致，并在预算口径中分别占用', 'secondary'); });
+        $('#faq3').on('click', function () { toast('付款已完成但未入账时，通常处于“凭证生成/复核”节点', 'secondary'); });
+        $('#btnSubmit').on('click', function () {
+          const title = ($('#fTitle').val() || '').trim();
+          const user = $('#fUser').val();
+          const dept = $('#fDept').val();
+          const amt = Number($('#fAmount').val() || 0);
+          if (!title || !user || !dept || !amt) { toast('请补全事项标题、申请人、部门与金额', 'danger'); return; }
+          toast('提交成功：ER-202604-0212；已占用预算并进入部门审批', 'success');
+        });
+        $('#btnSave').on('click', function () { toast('草稿已保存：ER-202604-0212（草稿）', 'secondary'); });
+
+        const ctxTrend = document.getElementById('chartTrend');
+        if (ctxTrend) {
+          new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+              labels: ['04-01','04-05','04-09','04-13','04-17','04-21','04-25','04-29'],
+              datasets: [
+                { label: '差旅', data: [3200, 4800, 5100, 6400, 8200, 9100, 10300, 12100], borderColor: 'rgba(56,189,248,.92)', backgroundColor: 'rgba(56,189,248,.14)', tension: .35, fill: true, pointRadius: 2.5 },
+                { label: '市场推广', data: [8200, 9800, 10200, 12600, 13800, 16200, 20800, 24300], borderColor: 'rgba(249,115,22,.92)', backgroundColor: 'rgba(249,115,22,.12)', tension: .35, fill: true, pointRadius: 2.5 }
+              ]
+            },
+            options: {
+              plugins: { legend: { labels: { color: 'rgba(226,232,240,.86)' } }, tooltip: { callbacks: { label: function (c) { return c.dataset.label + '：¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } },
+              scales: {
+                x: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } },
+                y: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } }
+              }
+            }
+          });
+        }
+
+        const ctxMix = document.getElementById('chartMix');
+        if (ctxMix) {
+          new Chart(ctxMix, {
+            type: 'polarArea',
+            data: {
+              labels: ['差旅费','市场推广','IT订阅','办公行政','维修费'],
+              datasets: [{ data: [48600, 72300, 39200, 28600, 49800], backgroundColor: ['rgba(56,189,248,.60)','rgba(249,115,22,.60)','rgba(168,85,247,.58)','rgba(34,197,94,.58)','rgba(226,232,240,.30)'], borderColor: 'rgba(226,232,240,.12)', borderWidth: 1 }]
+            },
+            options: { plugins: { legend: { position: 'bottom', labels: { color: 'rgba(226,232,240,.86)' } } }, scales: { r: { grid: { color: 'rgba(226,232,240,.08)' }, ticks: { color: 'rgba(148,163,184,.86)' } } } }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>税务与发票管理 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--bg:#071028;--card:rgba(255,255,255,.06);--line:rgba(148,163,184,.18);--text:#e5e7eb;--muted:#a8b3cf;--indigo:#6366f1;--cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;--shadow:0 18px 46px rgba(0,0,0,.44)}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;background:radial-gradient(900px 520px at 16% 10%,rgba(99,102,241,.20),transparent 58%),radial-gradient(900px 520px at 86% 12%,rgba(34,211,238,.18),transparent 60%),radial-gradient(900px 520px at 70% 90%,rgba(52,211,153,.14),transparent 60%),linear-gradient(180deg,#040718 0%,#071028 45%,#071028 100%);color:var(--text)}
+      .navbar{background:rgba(7,16,40,.64)!important;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+      .navbar-brand,.nav-link{color:rgba(226,232,240,.92)!important}
+      .nav-link{opacity:.78}
+      .nav-link:hover{opacity:1}
+      .nav-link.active{opacity:1;font-weight:900}
+      .page{padding-top:86px;padding-bottom:52px}
+      .hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(34,211,238,.16),rgba(52,211,153,.10));border-radius:22px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+      .hero::after{content:"";position:absolute;inset:-2px;background:radial-gradient(520px 220px at 16% 0%,rgba(99,102,241,.26),transparent 60%),radial-gradient(520px 220px at 88% 0%,rgba(34,211,238,.22),transparent 60%);pointer-events:none}
+      .hero .in{position:relative}
+      .hero h1{font-weight:900;letter-spacing:.2px}
+      .hero p{color:rgba(226,232,240,.82);max-width:82ch}
+      .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.18);color:rgba(226,232,240,.86);font-weight:800}
+      .chip i{color:rgba(34,211,238,.95)}
+      .section{scroll-margin-top:96px;opacity:0;transform:translateY(14px);transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{opacity:1;transform:translateY(0)}
+      .panel{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:18px;box-shadow:0 12px 34px rgba(0,0,0,.30)}
+      .panel .hd{padding:14px 16px;border-bottom:1px solid rgba(148,163,184,.18);display:flex;align-items:end;justify-content:space-between;gap:12px}
+      .panel .bd{padding:16px}
+      .kpi{border:1px solid rgba(148,163,184,.18);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.05));border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.26)}
+      .kpi .t{color:rgba(226,232,240,.78);font-weight:800;font-size:13px}
+      .kpi .v{font-size:26px;font-weight:900}
+      .kpi .s{color:rgba(148,163,184,.90);font-size:13px}
+      .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(2,6,23,.18);border:1px solid rgba(226,232,240,.14);color:rgba(226,232,240,.90);font-weight:900}
+      .dot{width:10px;height:10px;border-radius:999px}
+      .dot.i{background:rgba(99,102,241,.92)}
+      .dot.c{background:rgba(34,211,238,.92)}
+      .dot.e{background:rgba(52,211,153,.92)}
+      .dot.a{background:rgba(251,191,36,.92)}
+      .btn-accent{background:linear-gradient(135deg,rgba(34,211,238,.92),rgba(99,102,241,.86));border:0;color:#061024;font-weight:900}
+      .btn-accent:hover{filter:brightness(1.03)}
+      .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(226,232,240,.18);color:rgba(226,232,240,.90);font-weight:900}
+      .btn-ghost:hover{background:rgba(255,255,255,.10);border-color:rgba(226,232,240,.22)}
+      .form-control,.form-select{background:rgba(2,6,23,.18)!important;color:rgba(226,232,240,.92)!important;border:1px solid rgba(226,232,240,.16)!important}
+      .form-control::placeholder{color:rgba(148,163,184,.80)}
+      .form-label{color:rgba(226,232,240,.86);font-weight:800}
+      .table{color:rgba(226,232,240,.92)}
+      .table thead th{background:rgba(255,255,255,.06)!important;border-bottom:1px solid rgba(226,232,240,.12)!important}
+      .table td,.table th{border-color:rgba(226,232,240,.10)!important}
+      .badge-soft{border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.16);color:rgba(226,232,240,.92);font-weight:900}
+      .markline{border-left:3px solid rgba(34,211,238,.65);padding-left:12px}
+      .score{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:16px;border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)}
+      .score .k{color:rgba(148,163,184,.92);font-weight:800}
+      .score .v{font-weight:900}
+      .bar{height:10px;border-radius:999px;background:rgba(226,232,240,.10);overflow:hidden}
+      .bar span{display:block;height:100%;border-radius:999px;background:rgba(34,211,238,.86)}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="dashboard.html"><i class="bi bi-bank2 me-2"></i>财务信息数据管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">仪表盘</a></li>
+            <li class="nav-item"><a class="nav-link" href="vouchers-ledger.html">凭证总账</a></li>
+            <li class="nav-item"><a class="nav-link" href="ar-ap.html">往来应收应付</a></li>
+            <li class="nav-item"><a class="nav-link" href="expense-reimburse.html">费用报销</a></li>
+            <li class="nav-item"><a class="nav-link" href="assets.html">固定资产</a></li>
+            <li class="nav-item"><a class="nav-link active" href="tax-invoice.html">税务发票</a></li>
+            <li class="nav-item"><a class="nav-link" href="reports.html">报表分析</a></li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <a class="btn btn-ghost btn-sm px-3" href="#invoicein"><i class="bi bi-box-arrow-in-down me-1"></i>进项</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#invoiceout"><i class="bi bi-box-arrow-up-right me-1"></i>销项</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#taxcalc"><i class="bi bi-calculator me-1"></i>测算</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#exceptions"><i class="bi bi-exclamation-octagon me-1"></i>异常</a>
+            <a class="btn btn-ghost btn-sm px-3" href="login.html?logout=1"><i class="bi bi-box-arrow-right me-1"></i>退出登录</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero p-4 mb-4 section" id="top">
+          <div class="in">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+              <div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <span class="chip"><i class="bi bi-calendar3"></i>期间：2026-04</span>
+                  <span class="chip"><i class="bi bi-shield-check"></i>口径：进销项发票 + 凭证 + 往来核对</span>
+                  <span class="chip"><i class="bi bi-link-45deg"></i>联动：发票→凭证→报表</span>
+                </div>
+                <h1 class="h2 mb-2">税务与发票管理</h1>
+                <p class="mb-0">统一管理进项与销项发票台账，支持发票状态跟踪、抵扣测算与异常提示。系统将发票要素与凭证、往来回款/付款关联，减少漏票、错票带来的申报风险。</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-accent px-3" type="button" id="btnRunCheck"><i class="bi bi-shield-exclamation me-1"></i>运行合规检查</button>
+                <a class="btn btn-ghost px-3" href="#taxcalc"><i class="bi bi-graph-up me-1"></i>查看测算</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xxl-4">
+            <div class="row g-3 section">
+              <div class="col-12">
+                <div class="kpi p-3">
+                  <div class="t">销项税额（本月）</div>
+                  <div class="v">¥ 208,920</div>
+                  <div class="d-flex justify-content-between mt-2"><span class="s">开票金额：¥ 1,608,000</span><span class="badge rounded-pill badge-soft">税率结构 13%/9%</span></div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="kpi p-3">
+                  <div class="t">进项税额（可抵扣）</div>
+                  <div class="v">¥ 95,870</div>
+                  <div class="d-flex justify-content-between mt-2"><span class="s">进项金额：¥ 1,065,220</span><span class="badge rounded-pill badge-soft">专票 24 张</span></div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="kpi p-3">
+                  <div class="t">预计应纳增值税</div>
+                  <div class="v">¥ 113,050</div>
+                  <div class="s mt-2">测算：销项 208,920 - 进项 95,870</div>
+                  <div class="bar mt-2"><span style="width:54%"></span></div>
+                  <div class="d-flex justify-content-between mt-2 small" style="color:rgba(148,163,184,.90)"><span>税负趋势</span><span>本月 7.0%</span></div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="panel">
+                  <div class="hd">
+                    <div>
+                      <div class="fw-bold">合规指标</div>
+                      <div class="text-muted small">异常提示与整改方向</div>
+                    </div>
+                    <span class="badge rounded-pill badge-soft" id="riskBadge">风险：低</span>
+                  </div>
+                  <div class="bd">
+                    <div class="d-grid gap-2">
+                      <div class="score"><span class="k">缺失要素</span><span class="v" id="m1">2 项</span></div>
+                      <div class="score"><span class="k">税率不一致</span><span class="v" id="m2">1 条</span></div>
+                      <div class="score"><span class="k">发票未入账</span><span class="v" id="m3">3 张</span></div>
+                      <div class="score"><span class="k">往来未匹配</span><span class="v" id="m4">2 笔</span></div>
+                    </div>
+                    <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>指标用于引导排查：漏录、错税率、未入账、未匹配回款/付款。</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xxl-8">
+            <section class="panel section" id="invoicein">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">进项发票台账</div>
+                  <div class="text-muted small">子功能：进项发票归集、抵扣资格与状态跟踪</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="pill"><span class="dot e"></span>可抵扣</span>
+                  <span class="pill"><span class="dot a"></span>待认证</span>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnInLink"><i class="bi bi-link-45deg me-1"></i>关联凭证</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-lg-5">
+                    <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">进项结构</div>
+                      <canvas id="chartIn" height="190"></canvas>
+                      <div class="mt-3 markline small" style="color:rgba(148,163,184,.92)">
+                        抵扣口径优先依据发票状态与认证信息。若发票已入账但未认证，将进入“待认证”清单并触发提醒，避免错过申报期。
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-7">
+                    <div class="table-responsive">
+                      <table class="table align-middle mb-0" id="tblIn">
+                        <thead>
+                          <tr>
+                            <th style="width:120px">开票日期</th>
+                            <th>供应商</th>
+                            <th style="width:160px">发票号码</th>
+                            <th style="width:90px">税率</th>
+                            <th style="width:130px" class="text-end">税额</th>
+                            <th style="width:120px">状态</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr><td>2026-04-03</td><td class="fw-semibold">苏州瑞恒新材有限公司</td><td>01123110</td><td>13%</td><td class="text-end">26,520.00</td><td><span class="badge rounded-pill text-bg-success">可抵扣</span></td></tr>
+                          <tr><td>2026-04-07</td><td class="fw-semibold">上海锦程物流有限公司</td><td>01123308</td><td>9%</td><td class="text-end">5,992.84</td><td><span class="badge rounded-pill text-bg-warning">待认证</span></td></tr>
+                          <tr><td>2026-04-11</td><td class="fw-semibold">苏州清朗办公服务有限公司</td><td>01123520</td><td>6%</td><td class="text-end">2,547.17</td><td><span class="badge rounded-pill text-bg-success">可抵扣</span></td></tr>
+                          <tr><td>2026-04-15</td><td class="fw-semibold">北京云巢数据科技有限公司</td><td>01123602</td><td>6%</td><td class="text-end">554.72</td><td><span class="badge rounded-pill text-bg-secondary">已入账</span></td></tr>
+                          <tr><td>2026-04-19</td><td class="fw-semibold">江苏鸿策包装有限公司</td><td>01123811</td><td>13%</td><td class="text-end">4,476.11</td><td><span class="badge rounded-pill text-bg-success">可抵扣</span></td></tr>
+                          <tr><td>2026-04-26</td><td class="fw-semibold">苏州嘉成设备维护有限公司</td><td>01124109</td><td>13%</td><td class="text-end">3,276.28</td><td><span class="badge rounded-pill text-bg-warning">待补要素</span></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="mt-3 d-flex flex-wrap justify-content-between gap-2">
+                      <button class="btn btn-ghost btn-sm" type="button" id="btnInCheck"><i class="bi bi-shield-check me-1"></i>校验要素</button>
+                      <div class="text-muted small"><i class="bi bi-info-circle me-1"></i>进项台账用于抵扣测算与成本归集核对。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel section mt-4" id="invoiceout">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">销项开票与回款匹配</div>
+                  <div class="text-muted small">子功能：销项发票开具、回款匹配与异常提示</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-accent btn-sm" type="button" id="btnOutNew"><i class="bi bi-receipt-cutoff me-1"></i>新增开票</button>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnOutMatch"><i class="bi bi-arrow-left-right me-1"></i>匹配回款</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-lg-6">
+                    <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">销项与回款</div>
+                      <canvas id="chartOut" height="190"></canvas>
+                      <div class="mt-3 d-flex flex-wrap gap-2">
+                        <span class="pill"><span class="dot c"></span>开票金额</span>
+                        <span class="pill"><span class="dot e"></span>回款金额</span>
+                        <span class="pill"><span class="dot a"></span>未收余额</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-6">
+                    <div class="p-3 rounded-4 h-100" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">快速开票信息</div>
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label class="form-label">客户</label>
+                          <select class="form-select" id="outCustomer">
+                            <option selected>北京星河科技有限公司</option>
+                            <option>南京云桥智能装备有限公司</option>
+                            <option>杭州辰星电商有限公司</option>
+                            <option>无锡明途自动化有限公司</option>
+                          </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">税率</label>
+                          <select class="form-select" id="outRate">
+                            <option>9%</option>
+                            <option selected>13%</option>
+                            <option>6%</option>
+                          </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">含税金额</label>
+                          <input class="form-control" id="outAmount" value="181600">
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">开票日期</label>
+                          <input class="form-control" id="outDate" value="2026-04-25">
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">发票号码</label>
+                          <input class="form-control" id="outNo" value="01124567">
+                        </div>
+                        <div class="col-12 d-grid">
+                          <button class="btn btn-accent" type="button" id="btnOutSave"><i class="bi bi-save2 me-1"></i>保存并生成凭证草稿</button>
+                        </div>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-link-45deg me-1"></i>销项开票保存后，可与凭证模板联动（见“凭证总账”页面）。</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3 table-responsive">
+                  <table class="table align-middle mb-0" id="tblOut">
+                    <thead>
+                      <tr>
+                        <th style="width:120px">开票日期</th>
+                        <th>客户</th>
+                        <th style="width:160px">发票号码</th>
+                        <th style="width:90px">税率</th>
+                        <th style="width:140px" class="text-end">含税金额</th>
+                        <th style="width:140px" class="text-end">回款</th>
+                        <th style="width:120px">状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>2026-04-25</td><td class="fw-semibold">北京星河科技有限公司</td><td>01124567</td><td>13%</td><td class="text-end">181,600</td><td class="text-end">168,000</td><td><span class="badge rounded-pill text-bg-warning">部分回款</span></td></tr>
+                      <tr><td>2026-04-21</td><td class="fw-semibold">杭州辰星电商有限公司</td><td>01123219</td><td>9%</td><td class="text-end">96,800</td><td class="text-end">96,800</td><td><span class="badge rounded-pill text-bg-success">已回款</span></td></tr>
+                      <tr><td>2026-04-17</td><td class="fw-semibold">南京云桥智能装备有限公司</td><td>01122010</td><td>13%</td><td class="text-end">182,000</td><td class="text-end">0</td><td><span class="badge rounded-pill text-bg-danger">未回款</span></td></tr>
+                      <tr><td>2026-04-12</td><td class="fw-semibold">合肥锐进新材料有限公司</td><td>01120518</td><td>13%</td><td class="text-end">141,000</td><td class="text-end">0</td><td><span class="badge rounded-pill text-bg-danger">未回款</span></td></tr>
+                      <tr><td>2026-04-08</td><td class="fw-semibold">无锡明途自动化有限公司</td><td>01119208</td><td>9%</td><td class="text-end">88,400</td><td class="text-end">40,000</td><td><span class="badge rounded-pill text-bg-warning">部分回款</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel section mt-4" id="taxcalc">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">税额测算与申报清单</div>
+                  <div class="text-muted small">子功能：增值税测算、申报清单要点与异常提醒</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnGenList"><i class="bi bi-file-earmark-spreadsheet me-1"></i>生成申报清单</button>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnExport"><i class="bi bi-download me-1"></i>导出</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-lg-7">
+                    <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                        <div class="fw-bold">进销项税额对比</div>
+                        <div class="d-flex flex-wrap gap-2">
+                          <span class="pill"><span class="dot i"></span>销项税额</span>
+                          <span class="pill"><span class="dot c"></span>进项税额</span>
+                        </div>
+                      </div>
+                      <canvas id="chartVAT" height="210"></canvas>
+                      <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>对比图用于识别税负突变，重点关注销项增长与进项不足的结构性原因。</div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-5">
+                    <div class="p-3 rounded-4 h-100" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">测算结论</div>
+                      <div class="d-grid gap-2">
+                        <div class="score"><span class="k">销项税额</span><span class="v">¥ 208,920</span></div>
+                        <div class="score"><span class="k">进项税额</span><span class="v">¥ 95,870</span></div>
+                        <div class="score"><span class="k">预计应纳</span><span class="v">¥ 113,050</span></div>
+                        <div class="score"><span class="k">税负率</span><span class="v">7.0%</span></div>
+                      </div>
+                      <div class="mt-3 markline small" style="color:rgba(148,163,184,.92)">
+                        申报前建议核对：待认证进项、未入账发票、销项未回款对应的合同履约证据，以及税率不一致的明细行。
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3 table-responsive">
+                  <table class="table align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>清单项</th>
+                        <th>口径说明</th>
+                        <th style="width:160px" class="text-end">本月金额</th>
+                        <th style="width:120px">关注</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td class="fw-semibold">销项发票金额</td><td>按开票日期归集；与收入确认/凭证核对</td><td class="text-end">1,608,000</td><td><span class="badge rounded-pill text-bg-primary">核对</span></td></tr>
+                      <tr><td class="fw-semibold">销项税额</td><td>按税率结构拆分（13%/9%）</td><td class="text-end">208,920</td><td><span class="badge rounded-pill text-bg-primary">核对</span></td></tr>
+                      <tr><td class="fw-semibold">进项税额（可抵扣）</td><td>专票/认证状态/用途合规；与费用/成本归集联动</td><td class="text-end">95,870</td><td><span class="badge rounded-pill text-bg-warning">待认证</span></td></tr>
+                      <tr><td class="fw-semibold">未入账发票</td><td>发票要素齐全但未生成凭证</td><td class="text-end">3 张</td><td><span class="badge rounded-pill text-bg-danger">处理</span></td></tr>
+                      <tr><td class="fw-semibold">税率不一致</td><td>合同/开票税率与凭证税率口径不一致</td><td class="text-end">1 条</td><td><span class="badge rounded-pill text-bg-danger">处理</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel section mt-4" id="exceptions">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">异常清单与处理单</div>
+                  <div class="text-muted small">子功能：异常项跟踪、处理动作记录与整改闭环</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnCloseAll"><i class="bi bi-check2-all me-1"></i>批量结案</button>
+                  <button class="btn btn-accent btn-sm" type="button" id="btnCreateTicket"><i class="bi bi-clipboard2-check me-1"></i>生成处理单</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-xl-7">
+                    <div class="table-responsive">
+                      <table class="table align-middle mb-0" id="tblEx">
+                        <thead>
+                          <tr>
+                            <th style="width:120px">发现日期</th>
+                            <th>异常项</th>
+                            <th style="width:120px">关联对象</th>
+                            <th style="width:120px">类型</th>
+                            <th style="width:120px">状态</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr data-detail="进项发票 01123308 为物流服务费，已入账但认证信息未录入，建议补充认证状态并核对用途合规。">
+                            <td>2026-04-29</td><td class="fw-semibold">进项待认证</td><td>01123308</td><td><span class="badge rounded-pill text-bg-warning">进项</span></td><td><span class="badge rounded-pill text-bg-warning">待处理</span></td>
+                          </tr>
+                          <tr data-detail="合同 HT-2026-041 约定税率 13%，对应销项凭证税率字段为 9%，需核对开票税率与分录口径。">
+                            <td>2026-04-29</td><td class="fw-semibold">税率口径不一致</td><td>HT-2026-041</td><td><span class="badge rounded-pill text-bg-danger">销项</span></td><td><span class="badge rounded-pill text-bg-warning">待处理</span></td>
+                          </tr>
+                          <tr data-detail="供应商 苏州嘉成设备维护有限公司 发票 01124109 缺少用途说明与项目归集字段，影响抵扣与费用归集。">
+                            <td>2026-04-26</td><td class="fw-semibold">要素缺失</td><td>01124109</td><td><span class="badge rounded-pill text-bg-warning">进项</span></td><td><span class="badge rounded-pill text-bg-warning">待处理</span></td>
+                          </tr>
+                          <tr data-detail="销项发票 01122010 已开具但未生成凭证草稿，建议补录收入确认凭证并匹配回款计划。">
+                            <td>2026-04-17</td><td class="fw-semibold">发票未入账</td><td>01122010</td><td><span class="badge rounded-pill text-bg-danger">销项</span></td><td><span class="badge rounded-pill text-bg-warning">待处理</span></td>
+                          </tr>
+                          <tr data-detail="发票抬头为“杭州辰星电商有限公司”，往来单位名称在合同中为“杭州辰星电子商务有限公司”，需统一主数据。">
+                            <td>2026-04-21</td><td class="fw-semibold">抬头/主数据差异</td><td>01123219</td><td><span class="badge rounded-pill text-bg-secondary">主数据</span></td><td><span class="badge rounded-pill text-bg-warning">待处理</span></td>
+                          </tr>
+                          <tr data-detail="折扣条款补充协议导致对账差异（-3,600 vs -4,000），建议补充红字信息或调整差异说明。">
+                            <td>2026-04-29</td><td class="fw-semibold">对账差异</td><td>补充协议</td><td><span class="badge rounded-pill text-bg-primary">对账</span></td><td><span class="badge rounded-pill text-bg-warning">待处理</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>点击任意异常行可查看详情并生成处理单，处理结果可回写到对应台账与凭证。</div>
+                  </div>
+                  <div class="col-12 col-xl-5">
+                    <div class="p-3 rounded-4 h-100" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">处理动作</div>
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label class="form-label">处理类型</label>
+                          <select class="form-select" id="exAction">
+                            <option selected>补录要素/认证信息</option>
+                            <option>生成或调整凭证</option>
+                            <option>发起往来对账沟通</option>
+                            <option>主数据标准化</option>
+                          </select>
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">处理说明</label>
+                          <textarea class="form-control" rows="4" id="exMemo" placeholder="例如：补充认证信息、核对用途并更新抵扣状态">补充待认证进项发票的认证状态，核对用途合规并在申报清单中标记。</textarea>
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">责任人</label>
+                          <select class="form-select" id="exOwner">
+                            <option selected>李娜（税务）</option>
+                            <option>王珊（业务）</option>
+                            <option>陈雯（财务）</option>
+                            <option>刘凯（销售）</option>
+                          </select>
+                        </div>
+                        <div class="col-12 d-grid gap-2">
+                          <button class="btn btn-accent" type="button" id="btnCreateTicket2"><i class="bi bi-clipboard2-check me-1"></i>生成处理单并通知</button>
+                          <button class="btn btn-ghost" type="button" id="btnResetEx"><i class="bi bi-arrow-counterclockwise me-1"></i>重置</button>
+                        </div>
+                        <div class="col-12">
+                          <div class="score"><span class="k">最新处理单号</span><span class="v" id="ticketNo">—</span></div>
+                        </div>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-shield-check me-1"></i>处理单用于记录动作、责任人、完成时间与回写结果，便于稽核与复盘。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="exModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background:rgba(7,16,40,.92);border:1px solid rgba(148,163,184,.20)">
+          <div class="modal-header" style="border-color:rgba(148,163,184,.18)">
+            <h5 class="modal-title"><i class="bi bi-exclamation-octagon me-2"></i>异常详情</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="关闭"></button>
+          </div>
+          <div class="modal-body">
+            <div class="markline" style="color:rgba(226,232,240,.88)">
+              <div class="fw-bold mb-2" id="exTitle">—</div>
+              <div id="exDetail" style="color:rgba(148,163,184,.92)">—</div>
+            </div>
+            <div class="mt-3 text-muted small"><i class="bi bi-lightbulb me-1"></i>建议：从“处理动作”区域选择类型与责任人，生成处理单并回写。</div>
+          </div>
+          <div class="modal-footer" style="border-color:rgba(148,163,184,.18)">
+            <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>关闭</button>
+            <button type="button" class="btn btn-accent" id="btnFromModal"><i class="bi bi-clipboard2-check me-1"></i>生成处理单</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const authed = localStorage.getItem('fimds_auth') === '1';
+        if (!authed) {
+          const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
+          location.replace('login.html?next=' + next);
+          return;
+        }
+        function smoothScrollTo(targetId) {
+          const $t = $(targetId);
+          if (!$t.length) return;
+          const top = $t.offset().top - 88;
+          $('html, body').stop(true).animate({ scrollTop: top }, reduceMotion ? 0 : 520, 'swing');
+        }
+        $(document).on('click', 'a[href^=\"#\"]', function (e) {
+          const href = $(this).attr('href');
+          if (href && href.length > 1 && $(href).length) { e.preventDefault(); smoothScrollTo(href); }
+        });
+        const io = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) en.target.classList.add('in-view'); }); }, { threshold: 0.14 });
+        document.querySelectorAll('.section').forEach(function (el) { io.observe(el); });
+
+        function toast(message, kind) {
+          $('#toastDyn').remove();
+          const html = [
+            '<div id=\"toastDyn\" class=\"toast align-items-center text-bg-' + kind + ' border-0 position-fixed bottom-0 end-0 m-3\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" style=\"z-index:1080\">',
+            '  <div class=\"d-flex\">',
+            '    <div class=\"toast-body\"><i class=\"bi bi-info-circle me-2\"></i>' + message + '</div>',
+            '    <button type=\"button\" class=\"btn-close btn-close-white me-2 m-auto\" data-bs-dismiss=\"toast\" aria-label=\"关闭\"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+          $('body').append(html);
+          bootstrap.Toast.getOrCreateInstance(document.getElementById('toastDyn'), { delay: 2400 }).show();
+        }
+
+        $('#btnRunCheck').on('click', function () {
+          $('#riskBadge').text('风险：中').removeClass().addClass('badge rounded-pill text-bg-warning');
+          toast('合规检查完成：发现未入账 3 张、待认证 1 张、税率不一致 1 条', 'warning');
+        });
+        $('#btnInCheck').on('click', function () { toast('要素校验完成：建议补充 1 张发票的税号与用途', 'secondary'); });
+        $('#btnInLink').on('click', function () { toast('已关联凭证：记-202604-049（进项入账）', 'success'); });
+        $('#btnOutNew').on('click', function () { toast('已创建销项开票草稿：OUT-202604-006', 'primary'); });
+        $('#btnOutMatch').on('click', function () { toast('已自动匹配回款 3 笔，剩余 2 笔待确认', 'primary'); });
+        $('#btnOutSave').on('click', function () { toast('已保存并生成凭证草稿：记-202604-041（销项确认）', 'success'); });
+        $('#btnGenList').on('click', function () { toast('已生成申报清单：VAT-202604（含明细 29 行）', 'success'); });
+        $('#btnExport').on('click', function () { toast('已导出：增值税测算与清单_2026-04.xlsx', 'secondary'); });
+        $('#btnCloseAll').on('click', function () {
+          $('#tblEx tbody tr').each(function () { $(this).find('td:last-child span').removeClass().addClass('badge rounded-pill text-bg-success').text('已结案'); });
+          toast('已批量结案：异常 6 项', 'success');
+        });
+        function createTicket() {
+          const seq = String(Math.floor(120 + Math.random() * 80)).padStart(3, '0');
+          const no = 'TAX-EX-202604-' + seq;
+          $('#ticketNo').text(no);
+          toast('已生成处理单：' + no + '（已通知：' + $('#exOwner').val() + '）', 'primary');
+          return no;
+        }
+        $('#btnCreateTicket, #btnCreateTicket2, #btnFromModal').on('click', function () { createTicket(); });
+        $('#btnResetEx').on('click', function () {
+          $('#exAction').val('补录要素/认证信息');
+          $('#exOwner').val('李娜（税务）');
+          $('#exMemo').val('补充待认证进项发票的认证状态，核对用途合规并在申报清单中标记。');
+          $('#ticketNo').text('—');
+          toast('已重置处理动作', 'secondary');
+        });
+        $('#tblEx tbody').on('click', 'tr', function () {
+          const title = $(this).children().eq(1).text().trim() + ' / ' + $(this).children().eq(2).text().trim();
+          const detail = $(this).data('detail');
+          $('#exTitle').text(title);
+          $('#exDetail').text(detail);
+          bootstrap.Modal.getOrCreateInstance(document.getElementById('exModal')).show();
+        });
+
+        const ctxIn = document.getElementById('chartIn');
+        if (ctxIn) {
+          new Chart(ctxIn, {
+            type: 'doughnut',
+            data: { labels: ['可抵扣','待认证','已入账（不可抵扣）'], datasets: [{ data: [72800, 15920, 7150], backgroundColor: ['rgba(52,211,153,.70)','rgba(251,191,36,.70)','rgba(226,232,240,.28)'], borderColor: 'rgba(255,255,255,.20)', borderWidth: 1 }] },
+            options: { plugins: { legend: { position: 'bottom', labels: { color: 'rgba(226,232,240,.86)' } }, tooltip: { callbacks: { label: function (c) { return c.label + '：¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } }, cutout: '62%' }
+          });
+        }
+
+        const ctxOut = document.getElementById('chartOut');
+        if (ctxOut) {
+          const labels = ['04-01','04-07','04-13','04-19','04-25','04-29'];
+          const billed = [180000, 248000, 316000, 422000, 1608000, 1608000];
+          const paid = [120000, 196000, 270000, 318000, 944000, 1104800];
+          const remain = billed.map(function (v, i) { return v - paid[i]; });
+          new Chart(ctxOut, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [
+                { label: '开票金额', data: billed, backgroundColor: 'rgba(52,211,153,.40)', borderRadius: 10 },
+                { label: '回款金额', data: paid, backgroundColor: 'rgba(34,211,238,.40)', borderRadius: 10 },
+                { label: '未收余额', data: remain, type: 'line', borderColor: 'rgba(251,191,36,.92)', backgroundColor: 'rgba(251,191,36,.18)', tension: .35, pointRadius: 2.5, yAxisID: 'y' }
+              ]
+            },
+            options: {
+              plugins: { legend: { labels: { color: 'rgba(226,232,240,.86)' } }, tooltip: { callbacks: { label: function (c) { return c.dataset.label + '：¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } },
+              scales: { x: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } }, y: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } } }
+            }
+          });
+        }
+
+        const ctxVAT = document.getElementById('chartVAT');
+        if (ctxVAT) {
+          new Chart(ctxVAT, {
+            type: 'line',
+            data: {
+              labels: ['2025-11','2025-12','2026-01','2026-02','2026-03','2026-04'],
+              datasets: [
+                { label: '销项税额', data: [146200, 158400, 171960, 186420, 199800, 208920], borderColor: 'rgba(99,102,241,.92)', backgroundColor: 'rgba(99,102,241,.12)', tension: .35, fill: true, pointRadius: 2.5 },
+                { label: '进项税额', data: [83200, 88450, 90560, 91820, 94810, 95870], borderColor: 'rgba(34,211,238,.92)', backgroundColor: 'rgba(34,211,238,.10)', tension: .35, fill: true, pointRadius: 2.5 }
+              ]
+            },
+            options: {
+              plugins: { legend: { labels: { color: 'rgba(226,232,240,.86)' } }, tooltip: { callbacks: { label: function (c) { return c.dataset.label + '：¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } },
+              scales: { x: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } }, y: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } } }
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

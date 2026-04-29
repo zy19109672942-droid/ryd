@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>应收应付与往来管理 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--bg:#f7f8fb;--ink:#0f172a;--muted:#64748b;--line:rgba(15,23,42,.10);--card:#ffffff;--accent:#0ea5e9;--accent2:#10b981;--danger:#ef4444;--warn:#f59e0b;--shadow:0 18px 46px rgba(2,6,23,.10)}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;background:radial-gradient(900px 460px at 15% 8%,rgba(14,165,233,.14),transparent 60%),radial-gradient(900px 460px at 88% 12%,rgba(16,185,129,.12),transparent 60%),linear-gradient(180deg,#ffffff 0%,#f7f8fb 55%,#f3f6ff 100%);color:var(--ink)}
+      .navbar{backdrop-filter:blur(14px);background:rgba(255,255,255,.72)!important;border-bottom:1px solid var(--line)}
+      .navbar-brand{letter-spacing:.2px}
+      .nav-link{color:#0f172a!important;opacity:.86}
+      .nav-link:hover{opacity:1}
+      .nav-link.active{font-weight:800;opacity:1}
+      .page{padding-top:86px;padding-bottom:46px}
+      .hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(14,165,233,.10),rgba(16,185,129,.08)),rgba(255,255,255,.72);border-radius:22px;box-shadow:var(--shadow)}
+      .hero h1{font-weight:900;letter-spacing:.2px}
+      .hero p{color:var(--muted);max-width:72ch}
+      .chip{display:inline-flex;gap:8px;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(2,6,23,.04);border:1px solid rgba(15,23,42,.10);color:rgba(15,23,42,.78);font-weight:700}
+      .chip i{color:var(--accent)}
+      .section{scroll-margin-top:96px;transform:translateY(14px);opacity:0;transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{transform:translateY(0);opacity:1}
+      .cardx{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 28px rgba(2,6,23,.08)}
+      .cardx .hd{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:end;justify-content:space-between;gap:10px}
+      .cardx .bd{padding:16px}
+      .kpi{border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.90));box-shadow:0 10px 26px rgba(2,6,23,.08);position:relative;overflow:hidden}
+      .kpi::after{content:"";position:absolute;inset:0;background:radial-gradient(420px 220px at 12% 0%,rgba(14,165,233,.16),transparent 60%),radial-gradient(420px 220px at 92% 10%,rgba(16,185,129,.14),transparent 60%);pointer-events:none}
+      .kpi .in{position:relative;padding:16px}
+      .kpi .t{color:var(--muted);font-weight:800;font-size:13px;letter-spacing:.2px}
+      .kpi .v{font-size:26px;font-weight:900}
+      .kpi .s{color:var(--muted);font-size:13px}
+      .badge-soft{border:1px solid rgba(15,23,42,.12);background:rgba(2,6,23,.04);color:#0f172a;font-weight:800}
+      .tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid rgba(15,23,42,.12);background:#fff}
+      .tag.danger{border-color:rgba(239,68,68,.28);background:rgba(239,68,68,.08);color:#b91c1c}
+      .tag.warn{border-color:rgba(245,158,11,.34);background:rgba(245,158,11,.10);color:#92400e}
+      .tag.ok{border-color:rgba(16,185,129,.26);background:rgba(16,185,129,.10);color:#065f46}
+      .table thead th{background:rgba(15,23,42,.04);border-bottom:1px solid rgba(15,23,42,.10);color:#0f172a}
+      .table td,.table th{border-color:rgba(15,23,42,.08)}
+      .rail{position:sticky;top:94px}
+      .rail a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.72);text-decoration:none;color:#0f172a}
+      .rail a:hover{background:#fff}
+      .rail .i{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:rgba(14,165,233,.10);border:1px solid rgba(14,165,233,.18);color:var(--accent)}
+      .rail .small{color:var(--muted)}
+      .progress{height:10px;border-radius:999px;background:rgba(15,23,42,.08)}
+      .progress-bar{border-radius:999px}
+      .btn-soft{background:rgba(14,165,233,.10);border:1px solid rgba(14,165,233,.18);color:#0369a1;font-weight:900}
+      .btn-soft:hover{background:rgba(14,165,233,.14);border-color:rgba(14,165,233,.22);color:#075985}
+      .btn-soft2{background:rgba(16,185,129,.10);border:1px solid rgba(16,185,129,.18);color:#065f46;font-weight:900}
+      .btn-soft2:hover{background:rgba(16,185,129,.14);border-color:rgba(16,185,129,.22);color:#064e3b}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="dashboard.html"><i class="bi bi-bank2 me-2"></i>财务信息数据管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">仪表盘</a></li>
+            <li class="nav-item"><a class="nav-link" href="vouchers-ledger.html">凭证总账</a></li>
+            <li class="nav-item"><a class="nav-link active" href="ar-ap.html">往来应收应付</a></li>
+            <li class="nav-item"><a class="nav-link" href="expense-reimburse.html">费用报销</a></li>
+            <li class="nav-item"><a class="nav-link" href="assets.html">固定资产</a></li>
+            <li class="nav-item"><a class="nav-link" href="tax-invoice.html">税务发票</a></li>
+            <li class="nav-item"><a class="nav-link" href="reports.html">报表分析</a></li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <a class="btn btn-soft btn-sm px-3" href="#aging"><i class="bi bi-hourglass-split me-1"></i>账龄</a>
+            <a class="btn btn-soft2 btn-sm px-3" href="#reconcile"><i class="bi bi-arrow-left-right me-1"></i>对账</a>
+            <a class="btn btn-soft btn-sm px-3" href="login.html?logout=1"><i class="bi bi-box-arrow-right me-1"></i>退出登录</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero p-4 mb-4 section" id="top">
+          <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+            <div>
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="chip"><i class="bi bi-calendar3"></i>期间：2026-04</span>
+                <span class="chip"><i class="bi bi-person-badge"></i>负责人维度：客户经理 / 采购经理</span>
+                <span class="chip"><i class="bi bi-shield-check"></i>口径：发票+收付款+凭证关联核对</span>
+              </div>
+              <h1 class="h2 mb-2">应收应付与往来管理</h1>
+              <p class="mb-0">以往来单位为主线，贯通合同、开票、收付款与对账流程。通过账龄分层与到期提醒，让回款推进和付款计划更加可控。</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-primary fw-semibold" href="#receivable"><i class="bi bi-cash-coin me-1"></i>应收清单</a>
+              <a class="btn btn-outline-primary fw-semibold" href="#payable"><i class="bi bi-credit-card-2-front me-1"></i>应付计划</a>
+              <a class="btn btn-outline-dark fw-semibold" href="#aging"><i class="bi bi-bar-chart-line me-1"></i>账龄分析</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xxl-3">
+            <div class="rail section">
+              <div class="d-grid gap-2">
+                <a href="#receivable"><span class="i"><i class="bi bi-cash-coin"></i></span><span><div class="fw-bold">客户应收</div><div class="small">回款跟进、逾期提示</div></span></a>
+                <a href="#payable"><span class="i"><i class="bi bi-credit-card"></i></span><span><div class="fw-bold">供应商应付</div><div class="small">到期提醒、付款计划</div></span></a>
+                <a href="#aging"><span class="i"><i class="bi bi-hourglass-split"></i></span><span><div class="fw-bold">账龄分层</div><div class="small">0-30 / 31-60 / 61-90 / 90+</div></span></a>
+                <a href="#reconcile"><span class="i"><i class="bi bi-arrow-left-right"></i></span><span><div class="fw-bold">对账单</div><div class="small">差异项标记与导出</div></span></a>
+              </div>
+              <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>点击导航使用平滑滚动，下滑显示分区内容。</div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xxl-9">
+            <section class="section" id="receivable">
+              <div class="row g-3">
+                <div class="col-12 col-lg-4">
+                  <div class="kpi h-100">
+                    <div class="in">
+                      <div class="t">应收余额（含税）</div>
+                      <div class="v">¥ 1,748,560</div>
+                      <div class="d-flex align-items-center justify-content-between mt-2">
+                        <span class="s">逾期：¥ 286,900</span>
+                        <span class="tag danger"><i class="bi bi-exclamation-triangle"></i>3家逾期</span>
+                      </div>
+                      <div class="mt-3">
+                        <div class="d-flex justify-content-between small"><span class="text-muted">回款率（本月）</span><span class="fw-bold">74%</span></div>
+                        <div class="progress mt-1"><div class="progress-bar bg-primary" style="width:74%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                  <div class="kpi h-100">
+                    <div class="in">
+                      <div class="t">已开票未收</div>
+                      <div class="v">¥ 612,400</div>
+                      <div class="d-flex align-items-center justify-content-between mt-2">
+                        <span class="s">本月开票：¥ 1,104,800</span>
+                        <span class="tag warn"><i class="bi bi-receipt"></i>关注到期</span>
+                      </div>
+                      <div class="mt-3">
+                        <div class="d-flex justify-content-between small"><span class="text-muted">30日内到期占比</span><span class="fw-bold">58%</span></div>
+                        <div class="progress mt-1"><div class="progress-bar bg-warning" style="width:58%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                  <div class="kpi h-100">
+                    <div class="in">
+                      <div class="t">未开票已履约</div>
+                      <div class="v">¥ 181,600</div>
+                      <div class="d-flex align-items-center justify-content-between mt-2">
+                        <span class="s">对应合同：HT-2026-041</span>
+                        <span class="tag ok"><i class="bi bi-lightning-charge"></i>可开票</span>
+                      </div>
+                      <div class="mt-3">
+                        <div class="d-flex justify-content-between small"><span class="text-muted">开票完成度</span><span class="fw-bold">86%</span></div>
+                        <div class="progress mt-1"><div class="progress-bar bg-success" style="width:86%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cardx mt-3">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">客户应收清单</div>
+                    <div class="text-muted small">子功能：客户应收账龄与回款跟进</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-soft btn-sm" type="button" id="btnNextCall"><i class="bi bi-telephone-outbound me-1"></i>生成催收清单</button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="btnMarkFollow"><i class="bi bi-check2-square me-1"></i>标记已跟进</button>
+                  </div>
+                </div>
+                <div class="bd">
+                  <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">客户</label>
+                      <select class="form-select" id="qCustomer">
+                        <option selected>全部客户</option>
+                        <option>北京星河科技有限公司</option>
+                        <option>苏州启航电子有限公司</option>
+                        <option>南京云桥智能装备有限公司</option>
+                        <option>杭州辰星电商有限公司</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">账龄</label>
+                      <select class="form-select" id="qAge">
+                        <option selected>全部</option>
+                        <option>0-30天</option>
+                        <option>31-60天</option>
+                        <option>61-90天</option>
+                        <option>90天以上</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">负责人</label>
+                      <select class="form-select" id="qOwner">
+                        <option selected>全部</option>
+                        <option>王珊（客户经理）</option>
+                        <option>刘凯（客户经理）</option>
+                        <option>陈雯（客户经理）</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table align-middle mb-0" id="tblAR">
+                      <thead>
+                        <tr>
+                          <th style="width:42px" class="text-center"><input class="form-check-input" type="checkbox" id="arAll"></th>
+                          <th>客户</th>
+                          <th style="width:120px">账龄</th>
+                          <th style="width:160px">最新发票</th>
+                          <th style="width:140px" class="text-end">应收余额</th>
+                          <th style="width:140px">预计回款</th>
+                          <th style="width:120px">负责人</th>
+                          <th style="width:110px">状态</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="text-center"><input class="form-check-input arRow" type="checkbox"></td>
+                          <td class="fw-semibold">北京星河科技有限公司</td>
+                          <td><span class="tag ok">18天</span></td>
+                          <td>2026-04-25 / 01124567</td>
+                          <td class="text-end fw-bold">612,400</td>
+                          <td>2026-05-06</td>
+                          <td>王珊</td>
+                          <td><span class="badge rounded-pill text-bg-primary">跟进中</span></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center"><input class="form-check-input arRow" type="checkbox"></td>
+                          <td class="fw-semibold">苏州启航电子有限公司</td>
+                          <td><span class="tag danger">92天</span></td>
+                          <td>2026-01-20 / 01099831</td>
+                          <td class="text-end fw-bold">72,300</td>
+                          <td>2026-04-30</td>
+                          <td>刘凯</td>
+                          <td><span class="badge rounded-pill text-bg-danger">逾期</span></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center"><input class="form-check-input arRow" type="checkbox"></td>
+                          <td class="fw-semibold">南京云桥智能装备有限公司</td>
+                          <td><span class="tag warn">46天</span></td>
+                          <td>2026-03-10 / 01110322</td>
+                          <td class="text-end fw-bold">138,600</td>
+                          <td>2026-05-02</td>
+                          <td>陈雯</td>
+                          <td><span class="badge rounded-pill text-bg-warning">待确认</span></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center"><input class="form-check-input arRow" type="checkbox"></td>
+                          <td class="fw-semibold">杭州辰星电商有限公司</td>
+                          <td><span class="tag ok">9天</span></td>
+                          <td>2026-04-21 / 01123219</td>
+                          <td class="text-end fw-bold">86,500</td>
+                          <td>2026-05-01</td>
+                          <td>王珊</td>
+                          <td><span class="badge rounded-pill text-bg-success">承诺</span></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center"><input class="form-check-input arRow" type="checkbox"></td>
+                          <td class="fw-semibold">合肥锐进新材料有限公司</td>
+                          <td><span class="tag warn">63天</span></td>
+                          <td>2026-02-25 / 01105510</td>
+                          <td class="text-end fw-bold">124,800</td>
+                          <td>2026-05-08</td>
+                          <td>刘凯</td>
+                          <td><span class="badge rounded-pill text-bg-primary">跟进中</span></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center"><input class="form-check-input arRow" type="checkbox"></td>
+                          <td class="fw-semibold">无锡明途自动化有限公司</td>
+                          <td><span class="tag danger">97天</span></td>
+                          <td>2026-01-12 / 01097118</td>
+                          <td class="text-end fw-bold">90,300</td>
+                          <td>2026-04-29</td>
+                          <td>陈雯</td>
+                          <td><span class="badge rounded-pill text-bg-danger">逾期</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="mt-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="text-muted small"><i class="bi bi-link-45deg me-1"></i>清单可用于生成催收清单与责任人分配，形成闭环跟进记录。</div>
+                    <a class="btn btn-outline-dark btn-sm" href="#top"><i class="bi bi-arrow-up me-1"></i>返回顶部</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="payable">
+              <div class="cardx">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">供应商应付计划</div>
+                    <div class="text-muted small">子功能：供应商应付计划与到期提醒</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="badge rounded-pill badge-soft">7日内到期：¥ 193,200</span>
+                    <span class="badge rounded-pill badge-soft">30日内到期：¥ 421,700</span>
+                  </div>
+                </div>
+                <div class="bd">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-7">
+                      <div class="table-responsive">
+                        <table class="table align-middle mb-0" id="tblAP">
+                          <thead>
+                            <tr>
+                              <th>供应商</th>
+                              <th style="width:160px">合同/发票</th>
+                              <th style="width:130px">到期日</th>
+                              <th style="width:140px" class="text-end">应付金额</th>
+                              <th style="width:120px">审批</th>
+                              <th style="width:110px">优先级</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="fw-semibold">上海锦程物流有限公司</td>
+                              <td>HT-LOG-2403</td>
+                              <td>2026-05-03</td>
+                              <td class="text-end fw-bold">68,400</td>
+                              <td><span class="badge rounded-pill text-bg-success">已通过</span></td>
+                              <td><span class="tag warn">中</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">苏州瑞恒新材有限公司</td>
+                              <td>PO-202604-23</td>
+                              <td>2026-05-01</td>
+                              <td class="text-end fw-bold">246,800</td>
+                              <td><span class="badge rounded-pill text-bg-primary">进行中</span></td>
+                              <td><span class="tag warn">中</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">江苏鸿策包装有限公司</td>
+                              <td>INV-01123301</td>
+                              <td>2026-04-30</td>
+                              <td class="text-end fw-bold">38,900</td>
+                              <td><span class="badge rounded-pill text-bg-success">已通过</span></td>
+                              <td><span class="tag ok">低</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">苏州清朗办公服务有限公司</td>
+                              <td>HT-RENT-2026</td>
+                              <td>2026-04-29</td>
+                              <td class="text-end fw-bold">45,000</td>
+                              <td><span class="badge rounded-pill text-bg-success">已通过</span></td>
+                              <td><span class="tag danger">高</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">北京云巢数据科技有限公司</td>
+                              <td>SUB-2026-04</td>
+                              <td>2026-05-05</td>
+                              <td class="text-end fw-bold">9,800</td>
+                              <td><span class="badge rounded-pill text-bg-success">已通过</span></td>
+                              <td><span class="tag ok">低</span></td>
+                            </tr>
+                            <tr>
+                              <td class="fw-semibold">苏州嘉成设备维护有限公司</td>
+                              <td>SRV-202604-07</td>
+                              <td>2026-05-08</td>
+                              <td class="text-end fw-bold">31,600</td>
+                              <td><span class="badge rounded-pill text-bg-warning">待补充</span></td>
+                              <td><span class="tag warn">中</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="mt-3 d-flex flex-wrap gap-2">
+                        <button class="btn btn-soft2 btn-sm" type="button" id="btnPayBatch"><i class="bi bi-cash-stack me-1"></i>生成付款批次</button>
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="btnMarkPaid"><i class="bi bi-check2-circle me-1"></i>标记已付款</button>
+                        <span class="ms-auto text-muted small d-flex align-items-center"><i class="bi bi-calendar2-week me-1"></i>按到期日排序，避免错过付款窗口</span>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                      <div class="p-3 rounded-4 border" style="border-color:rgba(15,23,42,.10);background:rgba(2,6,23,.02)">
+                        <div class="fw-bold mb-2">到期结构（30日内）</div>
+                        <canvas id="chartAP" height="160"></canvas>
+                        <div class="mt-3">
+                          <div class="d-flex justify-content-between small"><span class="text-muted">7日内</span><span class="fw-bold">¥ 193,200</span></div>
+                          <div class="progress mt-1 mb-2"><div class="progress-bar bg-danger" style="width:46%"></div></div>
+                          <div class="d-flex justify-content-between small"><span class="text-muted">8-30日</span><span class="fw-bold">¥ 228,500</span></div>
+                          <div class="progress mt-1"><div class="progress-bar bg-warning" style="width:54%"></div></div>
+                        </div>
+                        <div class="mt-3 text-muted small"><i class="bi bi-lightbulb me-1"></i>建议将高优先级付款与现金流预测联动，避免资金断点。</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="aging">
+              <div class="cardx">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">账龄分析与风险提示</div>
+                    <div class="text-muted small">子功能：账龄区间分层（0-30 / 31-60 / 61-90 / 90+）</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="tag ok"><i class="bi bi-check2-circle"></i>0-30：¥ 1,160,200</span>
+                    <span class="tag warn"><i class="bi bi-hourglass"></i>31-60：¥ 263,400</span>
+                    <span class="tag warn"><i class="bi bi-hourglass-split"></i>61-90：¥ 226,060</span>
+                    <span class="tag danger"><i class="bi bi-exclamation-triangle"></i>90+：¥ 98,900</span>
+                  </div>
+                </div>
+                <div class="bd">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-7">
+                      <div class="p-3 rounded-4 border" style="border-color:rgba(15,23,42,.10);background:#fff">
+                        <canvas id="chartAging" height="150"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                      <div class="p-3 rounded-4 border h-100" style="border-color:rgba(15,23,42,.10);background:rgba(2,6,23,.02)">
+                        <div class="fw-bold mb-2">风险策略</div>
+                        <div class="d-grid gap-2">
+                          <button class="btn btn-soft fw-semibold" type="button" id="btnRule1"><i class="bi bi-flag me-1"></i>90天+ 自动升级为重点跟进</button>
+                          <button class="btn btn-outline-danger fw-semibold" type="button" id="btnRule2"><i class="bi bi-shield-exclamation me-1"></i>单客户余额>¥200,000 需复核合同条款</button>
+                          <button class="btn btn-outline-dark fw-semibold" type="button" id="btnRule3"><i class="bi bi-receipt me-1"></i>未开票>15天 提醒业务提交开票资料</button>
+                        </div>
+                        <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>策略按钮用于演示规则触发与提示方式。</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="reconcile">
+              <div class="cardx">
+                <div class="hd">
+                  <div>
+                    <div class="fw-bold">对账单与差异项</div>
+                    <div class="text-muted small">子功能：对账单生成、差异项标记与导出</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-dark btn-sm" type="button" id="btnGenStmt"><i class="bi bi-file-earmark-text me-1"></i>生成对账单</button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="btnExport"><i class="bi bi-download me-1"></i>导出</button>
+                  </div>
+                </div>
+                <div class="bd">
+                  <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">往来单位</label>
+                      <select class="form-select" id="stmtParty">
+                        <option selected>北京星河科技有限公司</option>
+                        <option>苏州启航电子有限公司</option>
+                        <option>上海锦程物流有限公司</option>
+                        <option>苏州瑞恒新材有限公司</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">对账期间</label>
+                      <select class="form-select" id="stmtPeriod">
+                        <option>2026-03</option>
+                        <option selected>2026-04</option>
+                        <option>2026-05</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">差异类型</label>
+                      <select class="form-select" id="stmtDiff">
+                        <option selected>全部</option>
+                        <option>价格差</option>
+                        <option>税率差</option>
+                        <option>未收票</option>
+                        <option>未入账</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table align-middle mb-0" id="tblStmt">
+                      <thead>
+                        <tr>
+                          <th style="width:120px">日期</th>
+                          <th>事项</th>
+                          <th style="width:140px" class="text-end">本方金额</th>
+                          <th style="width:140px" class="text-end">对方金额</th>
+                          <th style="width:120px">差异</th>
+                          <th style="width:120px">标记</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>2026-04-21</td>
+                          <td class="fw-semibold">销售出库与履约确认（HT-2026-041）</td>
+                          <td class="text-end">181,600</td>
+                          <td class="text-end">181,600</td>
+                          <td><span class="tag ok">一致</span></td>
+                          <td><span class="badge rounded-pill text-bg-success">已确认</span></td>
+                        </tr>
+                        <tr>
+                          <td>2026-04-25</td>
+                          <td class="fw-semibold">销项发票 01124567（税率13%）</td>
+                          <td class="text-end">168,000</td>
+                          <td class="text-end">168,000</td>
+                          <td><span class="tag ok">一致</span></td>
+                          <td><span class="badge rounded-pill text-bg-success">已确认</span></td>
+                        </tr>
+                        <tr>
+                          <td>2026-04-28</td>
+                          <td class="fw-semibold">回款到账（银行流水 20260428-0031）</td>
+                          <td class="text-end">168,000</td>
+                          <td class="text-end">168,000</td>
+                          <td><span class="tag ok">一致</span></td>
+                          <td><span class="badge rounded-pill text-bg-success">已确认</span></td>
+                        </tr>
+                        <tr>
+                          <td>2026-04-29</td>
+                          <td class="fw-semibold">折扣条款调整（补充协议）</td>
+                          <td class="text-end">-3,600</td>
+                          <td class="text-end">-4,000</td>
+                          <td><span class="tag warn">差异</span></td>
+                          <td><span class="badge rounded-pill text-bg-warning">待沟通</span></td>
+                        </tr>
+                        <tr>
+                          <td>2026-04-29</td>
+                          <td class="fw-semibold">未开票履约金额（待补资料）</td>
+                          <td class="text-end">181,600</td>
+                          <td class="text-end">0</td>
+                          <td><span class="tag danger">未开票</span></td>
+                          <td><span class="badge rounded-pill text-bg-danger">需处理</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="mt-3 text-muted small"><i class="bi bi-shield-check me-1"></i>对账完成后，可将差异项回写到“回款跟进/付款计划”并形成整改记录。</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const authed = localStorage.getItem('fimds_auth') === '1';
+        if (!authed) {
+          const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
+          location.replace('login.html?next=' + next);
+          return;
+        }
+        function smoothScrollTo(targetId) {
+          const $t = $(targetId);
+          if (!$t.length) return;
+          const top = $t.offset().top - 88;
+          $('html, body').stop(true).animate({ scrollTop: top }, reduceMotion ? 0 : 520, 'swing');
+        }
+        $(document).on('click', 'a[href^="#"]', function (e) {
+          const href = $(this).attr('href');
+          if (href && href.length > 1 && $(href).length) { e.preventDefault(); smoothScrollTo(href); }
+        });
+        const io = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) en.target.classList.add('in-view'); }); }, { threshold: 0.14 });
+        document.querySelectorAll('.section').forEach(function (el) { io.observe(el); });
+
+        $('#arAll').on('change', function () { $('.arRow').prop('checked', this.checked); });
+        $('#btnMarkFollow').on('click', function () {
+          $('#tblAR tbody .arRow:checked').each(function () {
+            const $tr = $(this).closest('tr');
+            $tr.find('td:last-child span').removeClass().addClass('badge rounded-pill text-bg-success').text('已跟进');
+          });
+        });
+        $('#btnNextCall').on('click', function () {
+          const list = [];
+          $('#tblAR tbody tr').each(function () {
+            const $tr = $(this);
+            const age = $tr.find('td').eq(2).text();
+            if (String(age).indexOf('天') >= 0 && /9\d|8\d/.test(age)) list.push($tr.find('td').eq(1).text().trim());
+          });
+          const text = list.length ? ('重点客户：' + list.join('、')) : '暂无重点催收客户';
+          toast(text, 'primary');
+        });
+        $('#btnPayBatch').on('click', function () { toast('已生成付款批次：PAY-202604-07（含6笔）', 'success'); });
+        $('#btnMarkPaid').on('click', function () { toast('已标记付款完成并回写付款结果', 'secondary'); });
+        $('#btnRule1').on('click', function () { toast('已将90天+客户加入重点跟进列表并通知负责人', 'danger'); });
+        $('#btnRule2').on('click', function () { toast('已触发合同条款复核提醒（单客户余额阈值）', 'warning'); });
+        $('#btnRule3').on('click', function () { toast('已提醒业务补充开票资料并生成待办', 'secondary'); });
+        $('#btnGenStmt').on('click', function () { toast('对账单已生成：STMT-202604-STAR', 'success'); });
+        $('#btnExport').on('click', function () { toast('已导出对账单：对账单_北京星河科技_2026-04.xlsx', 'primary'); });
+
+        function toast(message, kind) {
+          $('#toastDyn').remove();
+          const html = [
+            '<div id="toastDyn" class="toast align-items-center text-bg-' + kind + ' border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index:1080">',
+            '  <div class="d-flex">',
+            '    <div class="toast-body"><i class="bi bi-info-circle me-2"></i>' + message + '</div>',
+            '    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+          $('body').append(html);
+          bootstrap.Toast.getOrCreateInstance(document.getElementById('toastDyn'), { delay: 2400 }).show();
+        }
+
+        const ctxAP = document.getElementById('chartAP');
+        if (ctxAP) {
+          new Chart(ctxAP, {
+            type: 'doughnut',
+            data: { labels: ['7日内', '8-30日'], datasets: [{ data: [193200, 228500], backgroundColor: ['rgba(239,68,68,.75)','rgba(245,158,11,.70)'], borderColor: 'rgba(255,255,255,.9)', borderWidth: 2 }] },
+            options: { plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: function (c) { return c.label + '：¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } }, cutout: '62%' }
+          });
+        }
+
+        const ctxAging = document.getElementById('chartAging');
+        if (ctxAging) {
+          new Chart(ctxAging, {
+            type: 'bar',
+            data: {
+              labels: ['0-30天', '31-60天', '61-90天', '90天以上'],
+              datasets: [{ label: '应收余额', data: [1160200, 263400, 226060, 98900], backgroundColor: ['rgba(16,185,129,.55)','rgba(245,158,11,.55)','rgba(245,158,11,.45)','rgba(239,68,68,.55)'], borderRadius: 12 }]
+            },
+            options: {
+              plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return '¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } },
+              scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(15,23,42,.08)' }, ticks: { callback: function (v) { return (Number(v)/10000).toFixed(0) + '万'; } } } }
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

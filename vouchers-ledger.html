@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>凭证与总账管理 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--bg:#0b1020;--panel:#0f172a;--card:#0b1c3a;--soft:#0b2446;--line:rgba(148,163,184,.18);--text:#e2e8f0;--muted:rgba(226,232,240,.72);--accent:#a855f7;--accent2:#22c55e;--warn:#f59e0b}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;background:radial-gradient(900px 520px at 15% 18%,rgba(168,85,247,.25),transparent 60%),radial-gradient(900px 520px at 86% 12%,rgba(34,197,94,.18),transparent 60%),linear-gradient(180deg,#050816 0%,#0b1020 38%,#050816 100%);color:var(--text)}
+      .navbar{backdrop-filter:blur(14px);background:rgba(5,8,22,.65)!important;border-bottom:1px solid var(--line)}
+      .nav-link{color:rgba(226,232,240,.86)!important}
+      .nav-link:hover{color:#fff!important}
+      .nav-link.active{color:#fff!important;font-weight:700}
+      .page{padding-top:86px;padding-bottom:46px}
+      .hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(34,197,94,.10)),rgba(15,23,42,.55);border-radius:20px;box-shadow:0 22px 60px rgba(2,6,23,.35)}
+      .hero .title{font-weight:900;letter-spacing:.2px}
+      .hero .sub{color:var(--muted);max-width:70ch}
+      .chip{display:inline-flex;gap:8px;align-items:center;border-radius:999px;padding:6px 10px;border:1px solid var(--line);background:rgba(15,23,42,.55);color:rgba(226,232,240,.9)}
+      .chip i{font-size:14px}
+      .section{scroll-margin-top:96px;transform:translateY(16px);opacity:0;transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{transform:translateY(0);opacity:1}
+      .panel{border:1px solid var(--line);background:rgba(15,23,42,.62);border-radius:18px;box-shadow:0 16px 40px rgba(2,6,23,.28)}
+      .panel-header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+      .panel-title{font-weight:800}
+      .panel-sub{color:var(--muted);font-size:13px}
+      .panel-body{padding:16px}
+      .form-control,.form-select{background:rgba(2,6,23,.35);border:1px solid rgba(148,163,184,.22);color:rgba(226,232,240,.92)}
+      .form-control:focus,.form-select:focus{border-color:rgba(168,85,247,.65);box-shadow:0 0 0 .2rem rgba(168,85,247,.18);background:rgba(2,6,23,.35);color:rgba(226,232,240,.95)}
+      .form-text{color:rgba(226,232,240,.62)}
+      .btn-accent{background:linear-gradient(135deg,rgba(168,85,247,.95),rgba(124,58,237,.95));border:0}
+      .btn-accent:hover{filter:saturate(1.08) brightness(1.02)}
+      .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(148,163,184,.22);color:rgba(226,232,240,.9)}
+      .btn-ghost:hover{background:rgba(255,255,255,.10);border-color:rgba(148,163,184,.28);color:#fff}
+      .badge-soft{border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.25);color:rgba(226,232,240,.88)}
+      .grid-hint{background:linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(rgba(148,163,184,.10) 1px,transparent 1px);background-size:14px 14px;border-radius:16px;border:1px solid rgba(148,163,184,.18)}
+      .lines-table{color:rgba(226,232,240,.92);border-color:rgba(148,163,184,.18)}
+      .lines-table thead th{background:rgba(2,6,23,.36);border-bottom:1px solid rgba(148,163,184,.22);color:rgba(226,232,240,.82)}
+      .lines-table td,.lines-table th{border-color:rgba(148,163,184,.16)}
+      .sticky-preview{position:sticky;top:94px}
+      .kv{display:grid;grid-template-columns:110px 1fr;gap:8px 12px}
+      .kv .k{color:rgba(226,232,240,.66);font-size:13px}
+      .kv .v{font-weight:700}
+      .rule{height:1px;background:rgba(148,163,184,.18)}
+      .ledger-pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.20);background:rgba(2,6,23,.22)}
+      .ledger-pill .dot{width:10px;height:10px;border-radius:50%}
+      .dot-a{background:var(--accent)}
+      .dot-b{background:var(--accent2)}
+      .dot-c{background:var(--warn)}
+      .tab-pane{outline:none}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="dashboard.html"><i class="bi bi-bank2 me-2"></i>财务信息数据管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">仪表盘</a></li>
+            <li class="nav-item"><a class="nav-link active" href="vouchers-ledger.html">凭证总账</a></li>
+            <li class="nav-item"><a class="nav-link" href="ar-ap.html">往来应收应付</a></li>
+            <li class="nav-item"><a class="nav-link" href="expense-reimburse.html">费用报销</a></li>
+            <li class="nav-item"><a class="nav-link" href="assets.html">固定资产</a></li>
+            <li class="nav-item"><a class="nav-link" href="tax-invoice.html">税务发票</a></li>
+            <li class="nav-item"><a class="nav-link" href="reports.html">报表分析</a></li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <a class="btn btn-ghost btn-sm px-3" href="#entry"><i class="bi bi-file-earmark-plus me-1"></i>录入</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#balance"><i class="bi bi-journals me-1"></i>余额</a>
+            <a class="btn btn-ghost btn-sm px-3" href="login.html?logout=1"><i class="bi bi-box-arrow-right me-1"></i>退出登录</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="page">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero p-4 p-lg-4 mb-4 section" id="top">
+          <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+            <div>
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="chip"><i class="bi bi-calendar3"></i><span>期间：2026-04</span></span>
+                <span class="chip"><i class="bi bi-lock"></i><span>凭证状态：草稿 / 待审 / 已审 / 已过账</span></span>
+                <span class="chip"><i class="bi bi-gear"></i><span>凭证号规则：记-YYYYMM-序号</span></span>
+              </div>
+              <h1 class="title h2 mb-2">凭证与总账管理</h1>
+              <p class="sub mb-0">在同一页面完成凭证录入、审核、过账与账簿查询。通过借贷平衡校验、常用摘要与模板分录复用，减少录入错误并提升关账效率。</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-accent fw-semibold" href="#entry"><i class="bi bi-lightning-charge me-1"></i>开始录入</a>
+              <a class="btn btn-ghost fw-semibold" href="#list"><i class="bi bi-list-check me-1"></i>凭证列表</a>
+              <a class="btn btn-ghost fw-semibold" href="#review"><i class="bi bi-check2-circle me-1"></i>待审核</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xxl-7">
+            <div class="panel section" id="entry">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">凭证录入</div>
+                  <div class="panel-sub">子功能：凭证录入与模板分录（借贷自动校验）</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge rounded-pill badge-soft">制单：张宇</span>
+                  <span class="badge rounded-pill badge-soft">部门：财务部</span>
+                  <span class="badge rounded-pill badge-soft">币种：CNY</span>
+                </div>
+              </div>
+              <div class="panel-body">
+                <ul class="nav nav-pills gap-2 mb-3" id="entryTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-new" data-bs-toggle="pill" data-bs-target="#pane-new" type="button" role="tab" aria-controls="pane-new" aria-selected="true">
+                      <i class="bi bi-pencil-square me-1"></i>新建凭证
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-templates" data-bs-toggle="pill" data-bs-target="#pane-templates" type="button" role="tab" aria-controls="pane-templates" aria-selected="false">
+                      <i class="bi bi-bookmarks me-1"></i>模板分录
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-rules" data-bs-toggle="pill" data-bs-target="#pane-rules" type="button" role="tab" aria-controls="pane-rules" aria-selected="false">
+                      <i class="bi bi-shield-check me-1"></i>校验规则
+                    </button>
+                  </li>
+                </ul>
+
+                <div class="tab-content" id="entryTabsContent">
+                  <div class="tab-pane fade show active" id="pane-new" role="tabpanel" aria-labelledby="tab-new" tabindex="0">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">凭证号</label>
+                        <input class="form-control" id="voucherNo" value="记-202604-129" readonly>
+                        <div class="form-text">系统按期间自动递增编号</div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">日期</label>
+                        <input class="form-control" id="voucherDate" value="2026-04-29">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">凭证类型</label>
+                        <select class="form-select" id="voucherType">
+                          <option selected>记账凭证</option>
+                          <option>收款凭证</option>
+                          <option>付款凭证</option>
+                          <option>转账凭证</option>
+                        </select>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">摘要</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-transparent text-white-50 border" style="border-color: rgba(148,163,184,.22)"><i class="bi bi-chat-left-text"></i></span>
+                          <input class="form-control" id="voucherMemo" value="收到北京星河科技回款（销售货款）">
+                          <button class="btn btn-ghost" type="button" id="btnMemoQuick">常用摘要</button>
+                        </div>
+                        <div class="form-text">建议摘要包含“业务对象 + 事项 + 期间”，便于查询追溯</div>
+                      </div>
+                      <div class="col-12">
+                        <div class="grid-hint p-3">
+                          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                            <div class="fw-bold"><i class="bi bi-diagram-3 me-2"></i>分录行（借贷平衡）</div>
+                            <div class="d-flex gap-2">
+                              <button class="btn btn-ghost btn-sm" type="button" id="btnAddLine"><i class="bi bi-plus-circle me-1"></i>添加行</button>
+                              <button class="btn btn-ghost btn-sm" type="button" id="btnFillSample"><i class="bi bi-magic me-1"></i>填充示例</button>
+                            </div>
+                          </div>
+                          <div class="table-responsive">
+                            <table class="table lines-table align-middle mb-0" id="linesTable">
+                              <thead>
+                                <tr>
+                                  <th style="width: 170px;">科目</th>
+                                  <th>往来/项目</th>
+                                  <th style="width: 160px;" class="text-end">借方</th>
+                                  <th style="width: 160px;" class="text-end">贷方</th>
+                                  <th style="width: 80px;" class="text-center">操作</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <select class="form-select form-select-sm line-account">
+                                      <option selected>1002 银行存款</option>
+                                      <option>1001 库存现金</option>
+                                      <option>1122 应收账款</option>
+                                      <option>6001 主营业务收入</option>
+                                      <option>2221 应交税费</option>
+                                    </select>
+                                  </td>
+                                  <td><input class="form-control form-control-sm line-ref" value="北京星河科技有限公司"></td>
+                                  <td class="text-end"><input class="form-control form-control-sm text-end line-debit" value="168000.00"></td>
+                                  <td class="text-end"><input class="form-control form-control-sm text-end line-credit" value="0.00"></td>
+                                  <td class="text-center"><button class="btn btn-sm btn-ghost btnDelLine" type="button"><i class="bi bi-trash3"></i></button></td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <select class="form-select form-select-sm line-account">
+                                      <option>1002 银行存款</option>
+                                      <option>1001 库存现金</option>
+                                      <option>1122 应收账款</option>
+                                      <option selected>1122 应收账款</option>
+                                      <option>6001 主营业务收入</option>
+                                    </select>
+                                  </td>
+                                  <td><input class="form-control form-control-sm line-ref" value="北京星河科技有限公司"></td>
+                                  <td class="text-end"><input class="form-control form-control-sm text-end line-debit" value="0.00"></td>
+                                  <td class="text-end"><input class="form-control form-control-sm text-end line-credit" value="168000.00"></td>
+                                  <td class="text-center"><button class="btn btn-sm btn-ghost btnDelLine" type="button"><i class="bi bi-trash3"></i></button></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <div class="rule my-3"></div>
+                          <div class="row g-2 align-items-center">
+                            <div class="col-12 col-md-4">
+                              <div class="d-flex align-items-center justify-content-between">
+                                <span class="panel-sub">借方合计</span>
+                                <span class="fw-bold" id="sumDebit">¥ 168,000.00</span>
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                              <div class="d-flex align-items-center justify-content-between">
+                                <span class="panel-sub">贷方合计</span>
+                                <span class="fw-bold" id="sumCredit">¥ 168,000.00</span>
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                              <div class="d-flex align-items-center justify-content-between">
+                                <span class="panel-sub">差额</span>
+                                <span class="fw-bold" id="sumDiff">¥ 0.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                          <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-accent px-4 fw-semibold" type="button" id="btnSaveDraft"><i class="bi bi-save2 me-1"></i>保存草稿</button>
+                            <button class="btn btn-ghost px-4 fw-semibold" type="button" id="btnSubmitReview"><i class="bi bi-send me-1"></i>提交审核</button>
+                          </div>
+                          <div class="panel-sub" id="entryHint"><i class="bi bi-info-circle me-1"></i>当“差额=0”时可提交审核</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="pane-templates" role="tabpanel" aria-labelledby="tab-templates" tabindex="0">
+                    <div class="accordion" id="tplAccordion">
+                      <div class="accordion-item bg-transparent border-0">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button collapsed bg-transparent text-white border" style="border-color: rgba(148,163,184,.22)" type="button" data-bs-toggle="collapse" data-bs-target="#tpl1" aria-expanded="false" aria-controls="tpl1">
+                            <i class="bi bi-receipt me-2"></i>模板：开具销项发票（13%）
+                          </button>
+                        </h2>
+                        <div id="tpl1" class="accordion-collapse collapse" data-bs-parent="#tplAccordion">
+                          <div class="accordion-body border border-top-0" style="border-color: rgba(148,163,184,.22)">
+                            <div class="row g-2">
+                              <div class="col-12 col-md-8">
+                                <div class="panel-sub mb-2">适用：确认收入并登记销项税额，支持客户/合同信息补充</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                  <span class="ledger-pill"><span class="dot dot-a"></span>应收账款（含税）</span>
+                                  <span class="ledger-pill"><span class="dot dot-b"></span>主营业务收入（不含税）</span>
+                                  <span class="ledger-pill"><span class="dot dot-c"></span>应交税费-应交增值税（销项税额）</span>
+                                </div>
+                              </div>
+                              <div class="col-12 col-md-4">
+                                <button class="btn btn-accent w-100 fw-semibold" type="button" data-template="sale13"><i class="bi bi-arrow-down-circle me-1"></i>套用模板</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-3 panel-sub"><i class="bi bi-lightbulb me-1"></i>模板用于提高一致性：摘要、科目与税额拆分口径可复用，减少手工差错。</div>
+                  </div>
+
+                  <div class="tab-pane fade" id="pane-rules" role="tabpanel" aria-labelledby="tab-rules" tabindex="0">
+                    <div class="row g-3">
+                      <div class="col-12 col-lg-6">
+                        <div class="p-3 rounded-4 border" style="border-color: rgba(148,163,184,.22); background: rgba(2,6,23,.25);">
+                          <div class="fw-bold mb-1"><i class="bi bi-check2-square me-2"></i>借贷平衡校验</div>
+                          <div class="panel-sub">借方合计=贷方合计时允许提交审核；差额不为0将高亮提示并禁用提交按钮。</div>
+                          <div class="rule my-3"></div>
+                          <div class="fw-bold mb-1"><i class="bi bi-shield-lock me-2"></i>关键字段必填</div>
+                          <div class="panel-sub">凭证号、日期、摘要、至少两行分录、且每行必须选择科目并填写借或贷金额。</div>
+                          <div class="rule my-3"></div>
+                          <div class="fw-bold mb-1"><i class="bi bi-arrow-repeat me-2"></i>审核与过账约束</div>
+                          <div class="panel-sub">已审核凭证可撤销审核后修改；已过账凭证禁止直接修改，需通过冲销或更正凭证处理。</div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-lg-6">
+                        <div class="p-3 rounded-4 border h-100" style="border-color: rgba(148,163,184,.22); background: rgba(2,6,23,.25);">
+                          <div class="fw-bold mb-2"><i class="bi bi-clipboard-data me-2"></i>账簿勾稽关系</div>
+                          <div class="panel-sub mb-2">凭证过账后同步更新总账、明细账与科目余额，并支持从余额下钻到明细，再回到原凭证。</div>
+                          <div class="d-flex flex-wrap gap-2">
+                            <span class="badge rounded-pill badge-soft">总账 = 汇总</span>
+                            <span class="badge rounded-pill badge-soft">明细账 = 分录</span>
+                            <span class="badge rounded-pill badge-soft">余额表 = 期初+发生-期末</span>
+                          </div>
+                          <div class="rule my-3"></div>
+                          <div class="panel-sub"><i class="bi bi-exclamation-circle me-1"></i>建议关账前按“余额表→异常科目→明细→凭证”顺序核对，效率最高。</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel section mt-4" id="review">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">待审核与过账</div>
+                  <div class="panel-sub">子功能：审核流转（记录操作人、时间、状态）</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnApprove"><i class="bi bi-check2-circle me-1"></i>批量审核</button>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnPost"><i class="bi bi-box-arrow-in-down me-1"></i>批量过账</button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table class="table lines-table align-middle mb-0" id="reviewTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 42px;" class="text-center"><input class="form-check-input" type="checkbox" id="chkAll"></th>
+                        <th style="width: 130px;">凭证号</th>
+                        <th style="width: 120px;">日期</th>
+                        <th>摘要</th>
+                        <th style="width: 130px;" class="text-end">金额</th>
+                        <th style="width: 110px;">状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-center"><input class="form-check-input chkRow" type="checkbox"></td>
+                        <td class="fw-bold">记-202604-129</td>
+                        <td>2026-04-29</td>
+                        <td>收到北京星河科技回款（销售货款）</td>
+                        <td class="text-end">¥ 168,000.00</td>
+                        <td><span class="badge rounded-pill text-bg-warning">待审核</span></td>
+                      </tr>
+                      <tr>
+                        <td class="text-center"><input class="form-check-input chkRow" type="checkbox"></td>
+                        <td class="fw-bold">记-202604-130</td>
+                        <td>2026-04-29</td>
+                        <td>确认平台营销服务费（4月）</td>
+                        <td class="text-end">¥ 118,900.00</td>
+                        <td><span class="badge rounded-pill text-bg-warning">待审核</span></td>
+                      </tr>
+                      <tr>
+                        <td class="text-center"><input class="form-check-input chkRow" type="checkbox"></td>
+                        <td class="fw-bold">记-202604-131</td>
+                        <td>2026-04-29</td>
+                        <td>计提员工绩效奖金（4月）</td>
+                        <td class="text-end">¥ 86,500.00</td>
+                        <td><span class="badge rounded-pill text-bg-warning">待审核</span></td>
+                      </tr>
+                      <tr>
+                        <td class="text-center"><input class="form-check-input chkRow" type="checkbox"></td>
+                        <td class="fw-bold">记-202604-120</td>
+                        <td>2026-04-24</td>
+                        <td>员工差旅报销付款（华东客户走访）</td>
+                        <td class="text-end">¥ 12,360.00</td>
+                        <td><span class="badge rounded-pill text-bg-success">已审核</span></td>
+                      </tr>
+                      <tr>
+                        <td class="text-center"><input class="form-check-input chkRow" type="checkbox"></td>
+                        <td class="fw-bold">记-202604-118</td>
+                        <td>2026-04-23</td>
+                        <td>支付办公场地租金（4月）</td>
+                        <td class="text-end">¥ 45,000.00</td>
+                        <td><span class="badge rounded-pill text-bg-success">已审核</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="mt-3 panel-sub" id="reviewHint"><i class="bi bi-info-circle me-1"></i>已审核可过账；待审核需先审核。过账后将更新余额表与账簿查询。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xxl-5">
+            <div class="sticky-preview">
+              <div class="panel section" id="balance">
+                <div class="panel-header">
+                  <div>
+                    <div class="panel-title">科目余额速览</div>
+                    <div class="panel-sub">子功能：科目余额表（关账前快速核对）</div>
+                  </div>
+                  <span class="badge rounded-pill badge-soft">单位：¥</span>
+                </div>
+                <div class="panel-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <canvas id="chartBalance" height="120"></canvas>
+                    </div>
+                    <div class="col-12">
+                      <div class="p-3 rounded-4 border" style="border-color: rgba(148,163,184,.22); background: rgba(2,6,23,.25);">
+                        <div class="fw-bold mb-2"><i class="bi bi-receipt me-2"></i>当前凭证预览</div>
+                        <div class="kv">
+                          <div class="k">凭证号</div><div class="v" id="pvNo">记-202604-129</div>
+                          <div class="k">日期</div><div class="v" id="pvDate">2026-04-29</div>
+                          <div class="k">摘要</div><div class="v" id="pvMemo">收到北京星河科技回款（销售货款）</div>
+                          <div class="k">借贷合计</div><div class="v" id="pvTotal">¥ 168,000.00</div>
+                          <div class="k">状态</div><div class="v"><span class="badge rounded-pill text-bg-warning" id="pvStatus">草稿</span></div>
+                        </div>
+                        <div class="rule my-3"></div>
+                        <div class="d-flex flex-wrap gap-2">
+                          <button class="btn btn-ghost btn-sm" type="button" id="btnMarkReviewed"><i class="bi bi-check2-circle me-1"></i>标记已审核</button>
+                          <button class="btn btn-ghost btn-sm" type="button" id="btnMarkPosted"><i class="bi bi-box-arrow-in-down me-1"></i>标记已过账</button>
+                          <button class="btn btn-ghost btn-sm" type="button" id="btnResetStatus"><i class="bi bi-arrow-counterclockwise me-1"></i>重置</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="rule my-3"></div>
+                  <div class="table-responsive">
+                    <table class="table lines-table align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>科目</th>
+                          <th class="text-end">期初余额</th>
+                          <th class="text-end">本期发生</th>
+                          <th class="text-end">期末余额</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>1002 银行存款</td><td class="text-end">625,400.00</td><td class="text-end">+252,600.00</td><td class="text-end fw-bold">878,000.00</td></tr>
+                        <tr><td>1122 应收账款</td><td class="text-end">1,680,800.00</td><td class="text-end">+67,760.00</td><td class="text-end fw-bold">1,748,560.00</td></tr>
+                        <tr><td>2202 应付账款</td><td class="text-end">1,196,300.00</td><td class="text-end">-71,520.00</td><td class="text-end fw-bold">1,124,780.00</td></tr>
+                        <tr><td>6001 主营业务收入</td><td class="text-end">0.00</td><td class="text-end">+1,104,800.00</td><td class="text-end fw-bold">1,104,800.00</td></tr>
+                        <tr><td>6601 销售费用</td><td class="text-end">0.00</td><td class="text-end">+191,480.00</td><td class="text-end fw-bold">191,480.00</td></tr>
+                        <tr><td>6602 管理费用</td><td class="text-end">0.00</td><td class="text-end">+221,500.00</td><td class="text-end fw-bold">221,500.00</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="mt-3 panel-sub"><i class="bi bi-arrow-down-left-square me-1"></i>余额表可按科目展开并下钻到明细账与凭证列表。</div>
+                </div>
+              </div>
+
+              <div class="panel section mt-4" id="list">
+                <div class="panel-header">
+                  <div>
+                    <div class="panel-title">凭证列表查询</div>
+                    <div class="panel-sub">子功能：总账/明细账查询入口（筛选、定位、追溯）</div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnJumpTop"><i class="bi bi-arrow-up me-1"></i>返回顶部</button>
+                </div>
+                <div class="panel-body">
+                  <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">期间</label>
+                      <select class="form-select" id="qPeriod">
+                        <option selected>2026-04</option>
+                        <option>2026-03</option>
+                        <option>2026-02</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">状态</label>
+                      <select class="form-select" id="qStatus">
+                        <option selected>全部</option>
+                        <option>草稿</option>
+                        <option>待审核</option>
+                        <option>已审核</option>
+                        <option>已过账</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">关键字</label>
+                      <input class="form-control" id="qKeyword" value="北京星河">
+                    </div>
+                    <div class="col-12">
+                      <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-accent fw-semibold px-4" type="button" id="btnQuery"><i class="bi bi-search me-1"></i>查询</button>
+                        <button class="btn btn-ghost fw-semibold px-4" type="button" id="btnReset"><i class="bi bi-arrow-counterclockwise me-1"></i>重置</button>
+                        <span class="ms-auto panel-sub d-flex align-items-center"><i class="bi bi-funnel me-1"></i><span id="qHint">匹配到 3 条记录</span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table lines-table align-middle mb-0" id="listTable">
+                      <thead>
+                        <tr>
+                          <th style="width: 132px;">凭证号</th>
+                          <th style="width: 120px;">日期</th>
+                          <th>摘要</th>
+                          <th style="width: 130px;" class="text-end">借方合计</th>
+                          <th style="width: 110px;">状态</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">记-202604-129</td>
+                          <td>2026-04-29</td>
+                          <td>收到北京星河科技回款（销售货款）</td>
+                          <td class="text-end">168,000.00</td>
+                          <td><span class="badge rounded-pill text-bg-secondary">草稿</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-122</td>
+                          <td>2026-04-25</td>
+                          <td>开具销项发票（北京星河科技，13%）</td>
+                          <td class="text-end">168,000.00</td>
+                          <td><span class="badge rounded-pill text-bg-success">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-114</td>
+                          <td>2026-04-21</td>
+                          <td>确认销售收入（北京星河科技，合同HT-2026-041）</td>
+                          <td class="text-end">181,600.00</td>
+                          <td><span class="badge rounded-pill text-bg-success">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-108</td>
+                          <td>2026-04-18</td>
+                          <td>确认销售收入（苏州启航电子，订单SO-202604-33）</td>
+                          <td class="text-end">72,300.00</td>
+                          <td><span class="badge rounded-pill text-bg-success">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-099</td>
+                          <td>2026-04-14</td>
+                          <td>收到苏州启航电子部分回款（账龄分层跟进）</td>
+                          <td class="text-end">20,000.00</td>
+                          <td><span class="badge rounded-pill text-bg-success">已过账</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="mt-3 panel-sub"><i class="bi bi-link-45deg me-1"></i>点击列表行可将信息同步到右侧“当前凭证预览”，用于快速核对与追溯。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const authed = localStorage.getItem('fimds_auth') === '1';
+        if (!authed) {
+          const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
+          location.replace('login.html?next=' + next);
+          return;
+        }
+        function smoothScrollTo(targetId) {
+          const $target = $(targetId);
+          if (!$target.length) return;
+          const top = $target.offset().top - 88;
+          $('html, body').stop(true).animate({ scrollTop: top }, reduceMotion ? 0 : 520, 'swing');
+        }
+        $(document).on('click', 'a[href^="#"]', function (e) {
+          const href = $(this).attr('href');
+          if (!href || href.length < 2) return;
+          if ($(href).length) {
+            e.preventDefault();
+            smoothScrollTo(href);
+          }
+        });
+        const observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) { if (entry.isIntersecting) entry.target.classList.add('in-view'); });
+        }, { threshold: 0.16 });
+        document.querySelectorAll('.section').forEach(function (el) { observer.observe(el); });
+        function toMoney(n) {
+          const v = Number(n || 0);
+          return '¥ ' + v.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function recalc() {
+          let debit = 0;
+          let credit = 0;
+          $('#linesTable tbody tr').each(function () {
+            const d = Number($(this).find('.line-debit').val() || 0);
+            const c = Number($(this).find('.line-credit').val() || 0);
+            debit += isFinite(d) ? d : 0;
+            credit += isFinite(c) ? c : 0;
+          });
+          const diff = debit - credit;
+          $('#sumDebit').text(toMoney(debit));
+          $('#sumCredit').text(toMoney(credit));
+          $('#sumDiff').text(toMoney(Math.abs(diff)));
+          const ok = Math.abs(diff) < 0.005 && debit > 0;
+          $('#entryHint').html(ok ? '<i class="bi bi-check2-circle me-1"></i>借贷平衡，可提交审核' : '<i class="bi bi-exclamation-circle me-1"></i>借贷不平衡或金额为0，无法提交审核');
+          $('#btnSubmitReview').prop('disabled', !ok);
+        }
+        $(document).on('input', '.line-debit, .line-credit', recalc);
+        recalc();
+        function addLine(row) {
+          const html = [
+            '<tr>',
+            '  <td><select class="form-select form-select-sm line-account">',
+            '    <option>1002 银行存款</option>',
+            '    <option>1001 库存现金</option>',
+            '    <option>1122 应收账款</option>',
+            '    <option>2202 应付账款</option>',
+            '    <option>6601 销售费用</option>',
+            '    <option>6602 管理费用</option>',
+            '  </select></td>',
+            '  <td><input class="form-control form-control-sm line-ref" value="' + (row.ref || '') + '"></td>',
+            '  <td class="text-end"><input class="form-control form-control-sm text-end line-debit" value="' + (row.debit || '0.00') + '"></td>',
+            '  <td class="text-end"><input class="form-control form-control-sm text-end line-credit" value="' + (row.credit || '0.00') + '"></td>',
+            '  <td class="text-center"><button class="btn btn-sm btn-ghost btnDelLine" type="button"><i class="bi bi-trash3"></i></button></td>',
+            '</tr>'
+          ].join('');
+          $('#linesTable tbody').append(html);
+          recalc();
+        }
+
+        $('#btnAddLine').on('click', function () {
+          addLine({ ref: '项目：华东客户维护', debit: '0.00', credit: '0.00' });
+        });
+
+        $(document).on('click', '.btnDelLine', function () {
+          const $rows = $('#linesTable tbody tr');
+          if ($rows.length <= 2) return;
+          $(this).closest('tr').remove();
+          recalc();
+        });
+
+        $('#btnFillSample').on('click', function () {
+          const rows = [
+            { ref: '上海锦程物流有限公司', debit: '72580.00', credit: '0.00' },
+            { ref: '上海锦程物流有限公司', debit: '0.00', credit: '72580.00' }
+          ];
+          const $tbody = $('#linesTable tbody');
+          $tbody.empty();
+          rows.forEach(addLine);
+          $('#voucherMemo').val('支付上海锦程物流运费（3月-4月）');
+          $('#pvMemo').text('支付上海锦程物流运费（3月-4月）');
+        });
+
+        $('#btnMemoQuick').on('click', function () {
+          const options = [
+            '收到客户回款（销售货款）',
+            '支付供应商货款（采购结算）',
+            '计提本月折旧费用',
+            '支付平台营销服务费',
+            '计提本月工资与绩效'
+          ];
+          const idx = Math.floor(Math.random() * options.length);
+          $('#voucherMemo').val(options[idx]);
+          $('#pvMemo').text(options[idx]);
+        });
+
+        $('[data-template]').on('click', function () {
+          const tpl = $(this).data('template');
+          const $tbody = $('#linesTable tbody');
+          $tbody.empty();
+          if (tpl === 'sale13') {
+            $('#voucherMemo').val('确认销售收入并开具销项发票（13%）');
+            $tbody.append([
+              '<tr><td><select class="form-select form-select-sm line-account"><option selected>1122 应收账款</option><option>6001 主营业务收入</option><option>2221 应交税费</option></select></td><td><input class="form-control form-control-sm line-ref" value="北京星河科技有限公司"></td><td class="text-end"><input class="form-control form-control-sm text-end line-debit" value="181600.00"></td><td class="text-end"><input class="form-control form-control-sm text-end line-credit" value="0.00"></td><td class="text-center"><button class="btn btn-sm btn-ghost btnDelLine" type="button"><i class="bi bi-trash3"></i></button></td></tr>',
+              '<tr><td><select class="form-select form-select-sm line-account"><option>1122 应收账款</option><option selected>6001 主营业务收入</option><option>2221 应交税费</option></select></td><td><input class="form-control form-control-sm line-ref" value="合同HT-2026-041"></td><td class="text-end"><input class="form-control form-control-sm text-end line-debit" value="0.00"></td><td class="text-end"><input class="form-control form-control-sm text-end line-credit" value="160707.96"></td><td class="text-center"><button class="btn btn-sm btn-ghost btnDelLine" type="button"><i class="bi bi-trash3"></i></button></td></tr>',
+              '<tr><td><select class="form-select form-select-sm line-account"><option>1122 应收账款</option><option>6001 主营业务收入</option><option selected>2221 应交税费</option></select></td><td><input class="form-control form-control-sm line-ref" value="销项税额13%"></td><td class="text-end"><input class="form-control form-control-sm text-end line-debit" value="0.00"></td><td class="text-end"><input class="form-control form-control-sm text-end line-credit" value="20892.04"></td><td class="text-center"><button class="btn btn-sm btn-ghost btnDelLine" type="button"><i class="bi bi-trash3"></i></button></td></tr>'
+            ].join(''));
+          }
+          recalc();
+          smoothScrollTo('#entry');
+        });
+
+        $('#btnSaveDraft').on('click', function () {
+          $('#pvStatus').removeClass().addClass('badge rounded-pill text-bg-secondary').text('草稿');
+          bootstrap.Toast.getOrCreateInstance($('#toastSaved')[0]).show();
+        });
+
+        $('#btnSubmitReview').on('click', function () {
+          $('#pvStatus').removeClass().addClass('badge rounded-pill text-bg-warning').text('待审核');
+          bootstrap.Toast.getOrCreateInstance($('#toastSubmitted')[0]).show();
+        });
+
+        function setPreviewFromRow($tr) {
+          $('#pvNo').text($tr.children().eq(0).text().trim());
+          $('#pvDate').text($tr.children().eq(1).text().trim());
+          $('#pvMemo').text($tr.children().eq(2).text().trim());
+          $('#pvTotal').text('¥ ' + Number($tr.children().eq(3).text().trim().replace(/,/g, '')).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        }
+
+        $('#listTable tbody').on('click', 'tr', function () {
+          setPreviewFromRow($(this));
+          const statusText = $(this).find('td:last-child').text().trim();
+          const map = { '草稿': 'secondary', '待审核': 'warning', '已审核': 'success', '已过账': 'success' };
+          $('#pvStatus').removeClass().addClass('badge rounded-pill text-bg-' + (map[statusText] || 'secondary')).text(statusText);
+        });
+
+        $('#btnJumpTop').on('click', function () { smoothScrollTo('#top'); });
+
+        $('#btnQuery').on('click', function () {
+          const keyword = ($('#qKeyword').val() || '').trim();
+          let count = 0;
+          $('#listTable tbody tr').each(function () {
+            const text = $(this).text();
+            const ok = !keyword || text.indexOf(keyword) >= 0;
+            $(this).toggle(ok);
+            if (ok) count += 1;
+          });
+          $('#qHint').text('匹配到 ' + count + ' 条记录');
+        });
+
+        $('#btnReset').on('click', function () {
+          $('#qKeyword').val('');
+          $('#qStatus').val('全部');
+          $('#listTable tbody tr').show();
+          $('#qHint').text('匹配到 ' + $('#listTable tbody tr').length + ' 条记录');
+        });
+
+        $('#chkAll').on('change', function () {
+          $('.chkRow').prop('checked', this.checked);
+        });
+
+        function toastWith(text, kind) {
+          const id = 'toastDyn';
+          $('#' + id).remove();
+          const html = [
+            '<div id="' + id + '" class="toast align-items-center text-bg-' + kind + ' border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index:1080">',
+            '  <div class="d-flex">',
+            '    <div class="toast-body"><i class="bi bi-info-circle me-2"></i>' + text + '</div>',
+            '    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+          $('body').append(html);
+          bootstrap.Toast.getOrCreateInstance($('#' + id)[0], { delay: 2200 }).show();
+        }
+
+        $('#btnApprove').on('click', function () {
+          const checked = $('#reviewTable tbody .chkRow:checked').closest('tr');
+          if (!checked.length) return toastWith('未选择任何凭证', 'secondary');
+          checked.each(function () {
+            const $status = $(this).find('td:last-child span');
+            if ($status.text().trim() === '待审核') $status.removeClass().addClass('badge rounded-pill text-bg-success').text('已审核');
+          });
+          toastWith('已完成审核并记录操作时间', 'success');
+        });
+
+        $('#btnPost').on('click', function () {
+          const checked = $('#reviewTable tbody .chkRow:checked').closest('tr');
+          if (!checked.length) return toastWith('未选择任何凭证', 'secondary');
+          let ok = 0;
+          let skip = 0;
+          checked.each(function () {
+            const $status = $(this).find('td:last-child span');
+            if ($status.text().trim() === '已审核') {
+              $status.removeClass().addClass('badge rounded-pill text-bg-primary').text('已过账');
+              ok += 1;
+            } else {
+              skip += 1;
+            }
+          });
+          toastWith('过账完成：' + ok + ' 条；跳过：' + skip + ' 条', 'primary');
+        });
+
+        $('#btnMarkReviewed').on('click', function () {
+          $('#pvStatus').removeClass().addClass('badge rounded-pill text-bg-success').text('已审核');
+        });
+        $('#btnMarkPosted').on('click', function () {
+          $('#pvStatus').removeClass().addClass('badge rounded-pill text-bg-primary').text('已过账');
+        });
+        $('#btnResetStatus').on('click', function () {
+          $('#pvStatus').removeClass().addClass('badge rounded-pill text-bg-secondary').text('草稿');
+        });
+
+        const ctx = document.getElementById('chartBalance');
+        if (ctx) {
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['银行存款', '应收账款', '应付账款', '主营收入', '销售费用', '管理费用'],
+              datasets: [
+                { label: '期末余额', data: [878000, 1748560, 1124780, 1104800, 191480, 221500], backgroundColor: ['rgba(168,85,247,.55)','rgba(34,197,94,.45)','rgba(245,158,11,.45)','rgba(59,130,246,.45)','rgba(244,63,94,.45)','rgba(148,163,184,.35)'], borderRadius: 10, borderWidth: 1, borderColor: 'rgba(148,163,184,.18)' }
+              ]
+            },
+            options: {
+              plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return '¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } },
+              scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(148,163,184,.16)' }, ticks: { color: 'rgba(226,232,240,.78)', callback: function (v) { return (Number(v) / 10000).toFixed(0) + '万'; } } } }
+            }
+          });
+        }
+      })();
+    </script>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+      <div id="toastSaved" class="toast text-bg-secondary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+        <div class="d-flex"><div class="toast-body"><i class="bi bi-save2 me-2"></i>草稿已保存</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭"></button></div>
+      </div>
+      <div id="toastSubmitted" class="toast text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2400">
+        <div class="d-flex"><div class="toast-body"><i class="bi bi-send me-2"></i>已提交审核，等待复核</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭"></button></div>
+      </div>
+    </div>
+  </body></html>

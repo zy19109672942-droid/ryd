@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>仪表盘与经营概览 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--ink:#0f172a;--card:rgba(255,255,255,.92);--shadow:0 18px 50px rgba(2,6,23,.18)}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;color:var(--ink);background:radial-gradient(900px 380px at 12% 8%,rgba(32,201,151,.24),transparent 55%),radial-gradient(900px 420px at 88% 14%,rgba(13,110,253,.22),transparent 55%),radial-gradient(1100px 640px at 60% 90%,rgba(255,193,7,.14),transparent 58%),linear-gradient(180deg,#0b1220 0%,#0a1b35 22%,#0b2446 58%,#07111f 100%)}
+      .navbar{backdrop-filter:blur(14px);background:rgba(6,14,28,.64)!important;border-bottom:1px solid rgba(148,163,184,.18)}
+      .navbar .navbar-brand{letter-spacing:.3px}
+      .nav-link{color:rgba(226,232,240,.88)!important}
+      .nav-link:hover{color:#fff!important}
+      .nav-link.active{color:#fff!important;font-weight:600}
+      .app-shell{padding-top:86px;padding-bottom:46px}
+      .hero{border:1px solid rgba(148,163,184,.18);background:linear-gradient(135deg,rgba(13,110,253,.22),rgba(32,201,151,.18)),radial-gradient(820px 520px at 25% 20%,rgba(255,255,255,.14),transparent 55%),rgba(255,255,255,.06);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+      .hero::before{content:"";position:absolute;inset:-2px;background:radial-gradient(500px 240px at 12% 12%,rgba(32,201,151,.35),transparent 62%),radial-gradient(520px 260px at 90% 15%,rgba(13,110,253,.40),transparent 62%),radial-gradient(620px 280px at 60% 110%,rgba(255,193,7,.26),transparent 62%);filter:blur(18px);opacity:.9;pointer-events:none}
+      .hero-inner{position:relative;padding:28px 28px 22px}
+      .hero-title{color:rgba(255,255,255,.96);font-weight:800;letter-spacing:.2px}
+      .hero-sub{color:rgba(226,232,240,.84);max-width:64ch}
+      .pill{border:1px solid rgba(226,232,240,.18);background:rgba(255,255,255,.08);color:rgba(226,232,240,.9);padding:7px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:8px}
+      .pill .dot{width:9px;height:9px;border-radius:50%;background:#20c997;box-shadow:0 0 0 6px rgba(32,201,151,.18)}
+      .glass-card{background:var(--card);border:1px solid rgba(148,163,184,.22);border-radius:18px;box-shadow:0 12px 34px rgba(2,6,23,.14)}
+      .glass-card .card-header{background:rgba(248,250,252,.88);border-bottom:1px solid rgba(148,163,184,.22);border-top-left-radius:18px;border-top-right-radius:18px}
+      .kpi{border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.86));border:1px solid rgba(148,163,184,.22);box-shadow:0 18px 46px rgba(2,6,23,.12);overflow:hidden;position:relative}
+      .kpi::after{content:"";position:absolute;inset:0;background:radial-gradient(380px 180px at 20% 0%,rgba(13,110,253,.16),transparent 62%),radial-gradient(380px 180px at 90% 10%,rgba(32,201,151,.14),transparent 62%);pointer-events:none}
+      .kpi-inner{position:relative;padding:18px 18px 16px}
+      .kpi-label{color:#475569;font-weight:600;letter-spacing:.2px}
+      .kpi-value{font-size:26px;font-weight:800;letter-spacing:.2px}
+      .kpi-meta{color:#64748b;font-size:13px}
+      .kpi-badge{border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:6px}
+      .kpi-badge.positive{background:rgba(25,135,84,.12);color:#146c43;border:1px solid rgba(25,135,84,.20)}
+      .kpi-badge.negative{background:rgba(220,53,69,.10);color:#b02a37;border:1px solid rgba(220,53,69,.20)}
+      .soft-divider{height:1px;background:rgba(148,163,184,.22)}
+      .mini-nav{position:sticky;top:94px}
+      .mini-nav .list-group{border-radius:18px;overflow:hidden;border:1px solid rgba(148,163,184,.22);background:rgba(255,255,255,.92);box-shadow:0 10px 26px rgba(2,6,23,.12)}
+      .mini-nav .list-group-item{border:0;border-bottom:1px solid rgba(148,163,184,.18);padding:12px 14px;display:flex;gap:10px;align-items:center;color:#0f172a}
+      .mini-nav .list-group-item:last-child{border-bottom:0}
+      .mini-nav .list-group-item:hover{background:rgba(13,110,253,.06)}
+      .mini-nav .icon-wrap{width:34px;height:34px;display:grid;place-items:center;border-radius:12px;background:rgba(13,110,253,.10);border:1px solid rgba(13,110,253,.18);color:#0b5ed7}
+      .section{scroll-margin-top:96px;transform:translateY(18px);opacity:0;transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{transform:translateY(0);opacity:1}
+      .table thead th{background:rgba(241,245,249,.9);color:#0f172a;border-bottom:1px solid rgba(148,163,184,.22)}
+      .tag{border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;border:1px solid rgba(148,163,184,.22);background:rgba(248,250,252,.9);color:#334155}
+      .tag.high{border-color:rgba(220,53,69,.25);background:rgba(220,53,69,.08);color:#b02a37}
+      .tag.mid{border-color:rgba(255,193,7,.35);background:rgba(255,193,7,.12);color:#8a6d1d}
+      .tag.low{border-color:rgba(25,135,84,.25);background:rgba(25,135,84,.10);color:#146c43}
+      .btn-soft{background:rgba(255,255,255,.14);border:1px solid rgba(226,232,240,.20);color:rgba(255,255,255,.92)}
+      .btn-soft:hover{background:rgba(255,255,255,.20);border-color:rgba(226,232,240,.24);color:#fff}
+      .footer-note{color:rgba(226,232,240,.72);font-size:13px}
+      .chip{background:rgba(13,110,253,.08);border:1px solid rgba(13,110,253,.18);color:#0b5ed7;font-weight:700;border-radius:999px;padding:6px 10px;display:inline-flex;gap:8px;align-items:center}
+      .chip i{font-size:14px}
+      .progress{height:10px;border-radius:999px;background:rgba(148,163,184,.18)}
+      .progress-bar{border-radius:999px}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="dashboard.html">
+          <i class="bi bi-bank2 me-2"></i>财务信息数据管理系统
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item">
+              <a class="nav-link active" href="dashboard.html">仪表盘</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="vouchers-ledger.html">凭证总账</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="ar-ap.html">往来应收应付</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="expense-reimburse.html">费用报销</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="assets.html">固定资产</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tax-invoice.html">税务发票</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="reports.html">报表分析</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <button class="btn btn-soft btn-sm px-3" data-bs-toggle="offcanvas" data-bs-target="#filters" aria-controls="filters">
+              <i class="bi bi-sliders me-1"></i>筛选
+            </button>
+            <button class="btn btn-outline-light btn-sm px-3" id="btnRefresh">
+              <i class="bi bi-arrow-repeat me-1"></i>刷新
+            </button>
+            <a class="btn btn-soft btn-sm px-3" href="login.html?logout=1"><i class="bi bi-box-arrow-right me-1"></i>退出登录</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="app-shell">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero mb-4 section" id="top">
+          <div class="hero-inner">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+              <div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                  <span class="pill">
+                    <span class="dot"></span>
+                    <span class="small">当前期间：2026-04</span>
+                  </span>
+                  <span class="pill">
+                    <i class="bi bi-shield-check"></i>
+                    <span class="small">数据口径：记账凭证过账后更新</span>
+                  </span>
+                  <span class="pill">
+                    <i class="bi bi-clock-history"></i>
+                    <span class="small">更新时间：2026-04-29 10:26</span>
+                  </span>
+                </div>
+                <h1 class="hero-title display-6 mb-2">经营概览仪表盘</h1>
+                <p class="hero-sub mb-0">
+                  将收入、费用、利润、现金流与关键风险待办集中展示，支持从指标到明细的快速定位，帮助你在月中也能做出清晰判断。
+                </p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-light fw-semibold" href="#kpi">
+                  <i class="bi bi-speedometer2 me-1"></i>查看指标
+                </a>
+                <a class="btn btn-outline-light fw-semibold" href="#cashflow">
+                  <i class="bi bi-graph-up-arrow me-1"></i>现金流趋势
+                </a>
+                <a class="btn btn-soft fw-semibold" href="#todo">
+                  <i class="bi bi-exclamation-triangle me-1"></i>风险待办
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xl-3">
+            <div class="mini-nav section">
+              <div class="list-group">
+                <a class="list-group-item" href="#kpi">
+                  <span class="icon-wrap"><i class="bi bi-speedometer2"></i></span>
+                  <span class="fw-semibold">关键指标看板</span>
+                </a>
+                <a class="list-group-item" href="#cashflow">
+                  <span class="icon-wrap"><i class="bi bi-graph-up"></i></span>
+                  <span class="fw-semibold">现金流趋势</span>
+                </a>
+                <a class="list-group-item" href="#todo">
+                  <span class="icon-wrap"><i class="bi bi-bell"></i></span>
+                  <span class="fw-semibold">待办与预警</span>
+                </a>
+                <a class="list-group-item" href="#recent">
+                  <span class="icon-wrap"><i class="bi bi-journal-text"></i></span>
+                  <span class="fw-semibold">近期凭证</span>
+                </a>
+              </div>
+              <div class="mt-3 footer-note">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-info-circle"></i>
+                  <span>锚点导航支持平滑滚动与下滑动画展示</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-9">
+            <section class="section" id="kpi">
+              <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+                <div>
+                  <div class="text-white-50 small">子功能：关键指标看板</div>
+                  <h2 class="text-white fw-bold mb-0">关键指标（2026-04）</h2>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="chip">
+                    <i class="bi bi-building"></i>
+                    华辰贸易（苏州）有限公司
+                  </span>
+                  <span class="chip">
+                    <i class="bi bi-diagram-3"></i>
+                    口径：含税金额拆分后入账
+                  </span>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="kpi h-100">
+                    <div class="kpi-inner">
+                      <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                          <div class="kpi-label">本月收入</div>
+                          <div class="kpi-value">¥ 1,286,400</div>
+                        </div>
+                        <div class="kpi-badge positive">
+                          <i class="bi bi-arrow-up-right"></i>
+                          8.2%
+                        </div>
+                      </div>
+                      <div class="soft-divider my-3"></div>
+                      <div class="kpi-meta d-flex align-items-center justify-content-between">
+                        <span>已开票：¥ 1,104,800</span>
+                        <span>未开票：¥ 181,600</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="kpi h-100">
+                    <div class="kpi-inner">
+                      <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                          <div class="kpi-label">本月费用</div>
+                          <div class="kpi-value">¥ 412,980</div>
+                        </div>
+                        <div class="kpi-badge negative">
+                          <i class="bi bi-arrow-up-right"></i>
+                          12.5%
+                        </div>
+                      </div>
+                      <div class="soft-divider my-3"></div>
+                      <div class="kpi-meta d-flex align-items-center justify-content-between">
+                        <span>差旅：¥ 96,300</span>
+                        <span>营销：¥ 118,900</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="kpi h-100">
+                    <div class="kpi-inner">
+                      <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                          <div class="kpi-label">本月利润</div>
+                          <div class="kpi-value">¥ 238,610</div>
+                        </div>
+                        <div class="kpi-badge positive">
+                          <i class="bi bi-arrow-up-right"></i>
+                          3.1%
+                        </div>
+                      </div>
+                      <div class="soft-divider my-3"></div>
+                      <div class="kpi-meta d-flex align-items-center justify-content-between">
+                        <span>毛利率：22.6%</span>
+                        <span>费用率：32.1%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="kpi h-100">
+                    <div class="kpi-inner">
+                      <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                          <div class="kpi-label">现金余额</div>
+                          <div class="kpi-value">¥ 903,120</div>
+                        </div>
+                        <div class="kpi-badge positive">
+                          <i class="bi bi-arrow-up-right"></i>
+                          4.7%
+                        </div>
+                      </div>
+                      <div class="soft-divider my-3"></div>
+                      <div class="kpi-meta d-flex align-items-center justify-content-between">
+                        <span>主账户：¥ 625,400</span>
+                        <span>备用金：¥ 37,800</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="kpi h-100">
+                    <div class="kpi-inner">
+                      <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                          <div class="kpi-label">应收余额</div>
+                          <div class="kpi-value">¥ 1,748,560</div>
+                        </div>
+                        <div class="kpi-badge negative">
+                          <i class="bi bi-arrow-up-right"></i>
+                          6.0%
+                        </div>
+                      </div>
+                      <div class="soft-divider my-3"></div>
+                      <div class="kpi-meta d-flex align-items-center justify-content-between">
+                        <span>逾期：¥ 286,900</span>
+                        <span>90天+：¥ 72,300</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-xl-4">
+                  <div class="kpi h-100">
+                    <div class="kpi-inner">
+                      <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                          <div class="kpi-label">应付余额</div>
+                          <div class="kpi-value">¥ 1,124,780</div>
+                        </div>
+                        <div class="kpi-badge positive">
+                          <i class="bi bi-arrow-down-right"></i>
+                          2.4%
+                        </div>
+                      </div>
+                      <div class="soft-divider my-3"></div>
+                      <div class="kpi-meta d-flex align-items-center justify-content-between">
+                        <span>7日内到期：¥ 193,200</span>
+                        <span>30日内到期：¥ 421,700</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="cashflow">
+              <div class="glass-card">
+                <div class="card-header py-3 px-3 px-lg-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                  <div>
+                    <div class="small text-secondary">子功能：现金流趋势与资金结构</div>
+                    <div class="h5 mb-0 fw-bold">现金流趋势（近6个月）</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="tag low">经营性为主</span>
+                    <span class="tag">期末余额对齐</span>
+                    <span class="tag mid">关注回款节奏</span>
+                  </div>
+                </div>
+                <div class="card-body px-3 px-lg-4">
+                  <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-lg-8">
+                      <div class="p-3 rounded-4 border" style="background: rgba(248,250,252,0.75); border-color: rgba(148,163,184,0.22) !important;">
+                        <canvas id="chartCashflow" height="140"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                      <div class="p-3 rounded-4 border h-100" style="background: rgba(248,250,252,0.75); border-color: rgba(148,163,184,0.22) !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <div class="fw-bold">资金结构（本月）</div>
+                          <span class="small text-secondary">¥ 903,120</span>
+                        </div>
+                        <div class="mt-3">
+                          <div class="d-flex align-items-center justify-content-between small">
+                            <span class="text-secondary">银行存款</span>
+                            <span class="fw-semibold">¥ 827,920</span>
+                          </div>
+                          <div class="progress mt-1 mb-2">
+                            <div class="progress-bar bg-primary" style="width: 91.6%"></div>
+                          </div>
+
+                          <div class="d-flex align-items-center justify-content-between small">
+                            <span class="text-secondary">现金备用金</span>
+                            <span class="fw-semibold">¥ 37,800</span>
+                          </div>
+                          <div class="progress mt-1 mb-2">
+                            <div class="progress-bar bg-success" style="width: 4.2%"></div>
+                          </div>
+
+                          <div class="d-flex align-items-center justify-content-between small">
+                            <span class="text-secondary">其他货币资金</span>
+                            <span class="fw-semibold">¥ 37,400</span>
+                          </div>
+                          <div class="progress mt-1">
+                            <div class="progress-bar bg-warning" style="width: 4.1%"></div>
+                          </div>
+                        </div>
+                        <div class="soft-divider my-3"></div>
+                        <div class="d-grid gap-2">
+                          <a class="btn btn-outline-primary" href="ar-ap.html#receivable">
+                            <i class="bi bi-cash-coin me-1"></i>查看回款计划
+                          </a>
+                          <a class="btn btn-outline-success" href="ar-ap.html#payable">
+                            <i class="bi bi-credit-card me-1"></i>查看付款到期
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="todo">
+              <div class="glass-card">
+                <div class="card-header py-3 px-3 px-lg-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                  <div>
+                    <div class="small text-secondary">子功能：待办与预警</div>
+                    <div class="h5 mb-0 fw-bold">风险待办清单</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="tag high">高优先</span>
+                    <span class="tag mid">中优先</span>
+                    <span class="tag low">低优先</span>
+                  </div>
+                </div>
+                <div class="card-body px-3 px-lg-4">
+                  <div class="row g-3">
+                    <div class="col-12 col-lg-7">
+                      <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                          <thead>
+                            <tr>
+                              <th style="width: 132px;">类型</th>
+                              <th>事项</th>
+                              <th style="width: 140px;">截止/到期</th>
+                              <th style="width: 110px;">优先级</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><span class="tag high">应收逾期</span></td>
+                              <td class="fw-semibold">苏州启航电子：账龄 92 天，余额 ¥72,300</td>
+                              <td>2026-04-30</td>
+                              <td><span class="tag high">高</span></td>
+                            </tr>
+                            <tr>
+                              <td><span class="tag mid">待审核</span></td>
+                              <td class="fw-semibold">报销单 RE-202604-019：金额 ¥6,480（市场部）</td>
+                              <td>2026-04-29</td>
+                              <td><span class="tag mid">中</span></td>
+                            </tr>
+                            <tr>
+                              <td><span class="tag high">税期提醒</span></td>
+                              <td class="fw-semibold">增值税申报资料汇总与复核（销项/进项/抵扣）</td>
+                              <td>2026-05-15</td>
+                              <td><span class="tag high">高</span></td>
+                            </tr>
+                            <tr>
+                              <td><span class="tag mid">应付到期</span></td>
+                              <td class="fw-semibold">上海锦程物流：到期应付 ¥68,400（合同付款条件 30天）</td>
+                              <td>2026-05-03</td>
+                              <td><span class="tag mid">中</span></td>
+                            </tr>
+                            <tr>
+                              <td><span class="tag low">资产管理</span></td>
+                              <td class="fw-semibold">资产盘点提醒：办公设备（行政部）本月需核对台账</td>
+                              <td>2026-05-08</td>
+                              <td><span class="tag low">低</span></td>
+                            </tr>
+                            <tr>
+                              <td><span class="tag mid">待开票</span></td>
+                              <td class="fw-semibold">北京星河科技：合同 HT-2026-041，未开票金额 ¥181,600</td>
+                              <td>2026-05-06</td>
+                              <td><span class="tag mid">中</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                      <div class="p-3 p-lg-4 rounded-4 border h-100" style="background: rgba(248,250,252,0.75); border-color: rgba(148,163,184,0.22) !important;">
+                        <div class="fw-bold mb-2">处理建议</div>
+                        <div class="d-grid gap-2">
+                          <a class="btn btn-outline-danger d-flex align-items-center justify-content-between" href="ar-ap.html#aging">
+                            <span class="fw-semibold"><i class="bi bi-telephone-outbound me-2"></i>跟进逾期应收</span>
+                            <span class="small">账龄分层</span>
+                          </a>
+                          <a class="btn btn-outline-warning d-flex align-items-center justify-content-between" href="expense-reimburse.html#approve">
+                            <span class="fw-semibold"><i class="bi bi-check2-square me-2"></i>审批报销单</span>
+                            <span class="small">票据核对</span>
+                          </a>
+                          <a class="btn btn-outline-success d-flex align-items-center justify-content-between" href="tax-invoice.html#filing">
+                            <span class="fw-semibold"><i class="bi bi-calendar2-check me-2"></i>准备申报清单</span>
+                            <span class="small">税期提醒</span>
+                          </a>
+                          <a class="btn btn-outline-primary d-flex align-items-center justify-content-between" href="vouchers-ledger.html#balance">
+                            <span class="fw-semibold"><i class="bi bi-journals me-2"></i>核对科目余额</span>
+                            <span class="small">结账前</span>
+                          </a>
+                        </div>
+                        <div class="soft-divider my-3"></div>
+                        <div class="small text-secondary">
+                          优先处理与现金流与合规相关事项：逾期应收、税期申报、到期应付。其余事项按部门协同节奏推进，保证月末关账顺畅。
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section mt-4" id="recent">
+              <div class="glass-card">
+                <div class="card-header py-3 px-3 px-lg-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                  <div>
+                    <div class="small text-secondary">子功能：凭证快速回溯</div>
+                    <div class="h5 mb-0 fw-bold">近期凭证（已过账）</div>
+                  </div>
+                  <a class="btn btn-outline-secondary btn-sm" href="vouchers-ledger.html#list">
+                    <i class="bi bi-search me-1"></i>去查询
+                  </a>
+                </div>
+                <div class="card-body px-3 px-lg-4">
+                  <div class="table-responsive">
+                    <table class="table align-middle">
+                      <thead>
+                        <tr>
+                          <th style="width: 110px;">凭证号</th>
+                          <th style="width: 140px;">日期</th>
+                          <th>摘要</th>
+                          <th style="width: 140px;" class="text-end">借方合计</th>
+                          <th style="width: 110px;">状态</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">记-202604-128</td>
+                          <td>2026-04-28</td>
+                          <td>收到北京星河科技回款（销售货款）</td>
+                          <td class="text-end">¥ 168,000.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-127</td>
+                          <td>2026-04-28</td>
+                          <td>支付上海锦程物流运费（3月-4月）</td>
+                          <td class="text-end">¥ 68,400.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-126</td>
+                          <td>2026-04-27</td>
+                          <td>计提4月固定资产折旧（办公设备/运输设备）</td>
+                          <td class="text-end">¥ 23,650.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-125</td>
+                          <td>2026-04-27</td>
+                          <td>确认4月平台营销服务费（含税）</td>
+                          <td class="text-end">¥ 118,900.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-124</td>
+                          <td>2026-04-26</td>
+                          <td>员工差旅报销付款（华东客户走访）</td>
+                          <td class="text-end">¥ 12,360.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-123</td>
+                          <td>2026-04-25</td>
+                          <td>采购原材料入库（苏州瑞恒新材）</td>
+                          <td class="text-end">¥ 246,800.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-122</td>
+                          <td>2026-04-25</td>
+                          <td>开具销项发票（北京星河科技，13%）</td>
+                          <td class="text-end">¥ 168,000.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">记-202604-121</td>
+                          <td>2026-04-24</td>
+                          <td>支付云服务与协作软件订阅费用（4月）</td>
+                          <td class="text-end">¥ 9,800.00</td>
+                          <td><span class="tag low">已过账</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="filters" aria-labelledby="filtersLabel">
+      <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title" id="filtersLabel">
+          <i class="bi bi-sliders me-2"></i>筛选与口径
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="关闭"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="mb-3">
+          <label class="form-label">期间</label>
+          <select class="form-select" id="periodSelect">
+            <option value="2026-04" selected>2026-04</option>
+            <option value="2026-03">2026-03</option>
+            <option value="2026-02">2026-02</option>
+            <option value="2026-01">2026-01</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">组织</label>
+          <select class="form-select" id="orgSelect">
+            <option selected>华辰贸易（苏州）有限公司</option>
+            <option>华辰贸易（昆山）有限公司</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">展示口径</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="caliber" id="caliberPosted" checked>
+            <label class="form-check-label" for="caliberPosted">仅展示已过账数据</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="caliber" id="caliberReviewed">
+            <label class="form-check-label" for="caliberReviewed">包含已审核未过账</label>
+          </div>
+        </div>
+        <div class="soft-divider my-3"></div>
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-light" id="applyFilter">
+            <i class="bi bi-check2-circle me-1"></i>应用
+          </button>
+          <button class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">
+            <i class="bi bi-x-circle me-1"></i>取消
+          </button>
+        </div>
+        <div class="mt-3 small text-white-50">
+          本页面用于演示信息结构与交互方式。实际业务使用时可对接后端接口实现数据实时刷新。
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const authed = localStorage.getItem('fimds_auth') === '1';
+        if (!authed) {
+          const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
+          location.replace('login.html?next=' + next);
+          return;
+        }
+
+        function smoothScrollTo(targetId) {
+          const $target = $(targetId);
+          if (!$target.length) return;
+          const top = $target.offset().top - 88;
+          $('html, body').stop(true).animate({ scrollTop: top }, reduceMotion ? 0 : 520, 'swing');
+        }
+
+        $(document).on('click', 'a[href^="#"]', function (e) {
+          const href = $(this).attr('href');
+          if (!href || href.length < 2) return;
+          if ($(href).length) {
+            e.preventDefault();
+            smoothScrollTo(href);
+          }
+        });
+
+        $('#btnRefresh').on('click', function () {
+          const btn = this;
+          btn.disabled = true;
+          const original = btn.innerHTML;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>刷新中';
+          window.setTimeout(function () {
+            btn.innerHTML = original;
+            btn.disabled = false;
+          }, 650);
+        });
+
+        $('#applyFilter').on('click', function () {
+          const period = $('#periodSelect').val();
+          const org = $('#orgSelect').val();
+          const caliber = $('#caliberReviewed').is(':checked') ? '包含已审核未过账' : '仅已过账';
+          const toastEl = document.getElementById('liveToast');
+          if (toastEl) {
+            toastEl.remove();
+          }
+
+          const toastHtml = [
+            '<div id="liveToast" class="toast align-items-center text-bg-light border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 1080;">',
+            '  <div class="d-flex">',
+            '    <div class="toast-body">',
+            '      <div class="fw-bold mb-1"><i class="bi bi-check2-circle me-1 text-success"></i>筛选已应用</div>',
+            '      <div class="small text-secondary">期间：' + period + '；组织：' + org + '；口径：' + caliber + '</div>',
+            '    </div>',
+            '    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="关闭"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+
+          $('body').append(toastHtml);
+          const toast = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'), { delay: 2300 });
+          toast.show();
+          const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('filters'));
+          if (offcanvas) offcanvas.hide();
+        });
+
+        const sections = Array.from(document.querySelectorAll('.section'));
+        const observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+            }
+          });
+        }, { threshold: 0.18 });
+
+        sections.forEach(function (el) {
+          observer.observe(el);
+        });
+
+        const cashflowLabels = ['2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04'];
+        const inflow = [782000, 864500, 926800, 901200, 973600, 1014200];
+        const outflow = [703400, 812900, 845200, 873600, 902300, 956400];
+        const net = inflow.map(function (v, i) { return v - outflow[i]; });
+
+        const ctxCashflow = document.getElementById('chartCashflow');
+        if (ctxCashflow) {
+          new Chart(ctxCashflow, {
+            type: 'bar',
+            data: {
+              labels: cashflowLabels,
+              datasets: [
+                {
+                  label: '现金流入',
+                  data: inflow,
+                  backgroundColor: 'rgba(13,110,253,0.55)',
+                  borderColor: 'rgba(13,110,253,0.9)',
+                  borderWidth: 1,
+                  borderRadius: 10
+                },
+                {
+                  label: '现金流出',
+                  data: outflow,
+                  backgroundColor: 'rgba(32,201,151,0.45)',
+                  borderColor: 'rgba(32,201,151,0.9)',
+                  borderWidth: 1,
+                  borderRadius: 10
+                },
+                {
+                  label: '净额',
+                  type: 'line',
+                  data: net,
+                  borderColor: 'rgba(255,193,7,0.9)',
+                  backgroundColor: 'rgba(255,193,7,0.18)',
+                  tension: 0.32,
+                  pointRadius: 4,
+                  pointHoverRadius: 5,
+                  fill: true
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                  callbacks: {
+                    label: function (ctx) {
+                      const val = ctx.raw;
+                      const formatted = Number(val).toLocaleString('zh-CN');
+                      return ctx.dataset.label + ': ¥ ' + formatted;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  ticks: {
+                    callback: function (value) {
+                      return '¥ ' + Number(value).toLocaleString('zh-CN');
+                    }
+                  },
+                  grid: { color: 'rgba(148,163,184,0.22)' }
+                },
+                x: { grid: { display: false } }
+              }
+            }
+          });
+        }
+
+        return;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>固定资产与折旧管理 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--bg:#0a0f16;--card:#0f172a;--card2:#0b1220;--line:rgba(148,163,184,.18);--text:#e5e7eb;--muted:#a8b3cf;--g:#34d399;--b:#60a5fa;--p:#f472b6;--y:#fbbf24;--shadow:0 18px 46px rgba(0,0,0,.44)}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;background:radial-gradient(900px 520px at 10% 10%,rgba(96,165,250,.22),transparent 58%),radial-gradient(900px 520px at 90% 10%,rgba(52,211,153,.18),transparent 58%),radial-gradient(900px 520px at 60% 90%,rgba(244,114,182,.14),transparent 58%),linear-gradient(180deg,#070b12 0%,#0a0f16 40%,#0a0f16 100%);color:var(--text)}
+      .navbar{background:rgba(10,15,22,.64)!important;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+      .navbar-brand,.nav-link{color:rgba(226,232,240,.92)!important}
+      .nav-link{opacity:.78}
+      .nav-link:hover{opacity:1}
+      .nav-link.active{opacity:1;font-weight:900}
+      .page{padding-top:86px;padding-bottom:52px}
+      .section{scroll-margin-top:96px;opacity:0;transform:translateY(14px);transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{opacity:1;transform:translateY(0)}
+      .shell{display:grid;grid-template-columns:320px 1fr;gap:18px}
+      @media (max-width: 1199.98px){.shell{grid-template-columns:1fr}}
+      .side{position:sticky;top:94px;align-self:start}
+      .panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.04));border-radius:18px;box-shadow:var(--shadow)}
+      .panel .hd{padding:14px 16px;border-bottom:1px solid rgba(148,163,184,.18);display:flex;align-items:end;justify-content:space-between;gap:10px}
+      .panel .bd{padding:16px}
+      .hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(96,165,250,.18),rgba(52,211,153,.16),rgba(244,114,182,.12));border-radius:22px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+      .hero::after{content:"";position:absolute;inset:-2px;background:radial-gradient(520px 220px at 12% 0%,rgba(96,165,250,.26),transparent 60%),radial-gradient(520px 220px at 88% 0%,rgba(52,211,153,.22),transparent 60%);pointer-events:none}
+      .hero .in{position:relative}
+      .hero h1{font-weight:900;letter-spacing:.2px}
+      .hero p{color:rgba(226,232,240,.80);max-width:80ch}
+      .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.18);color:rgba(226,232,240,.86);font-weight:800}
+      .chip i{color:rgba(52,211,153,.95)}
+      .navcard{display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:16px;border:1px solid rgba(148,163,184,.18);background:rgba(255,255,255,.06);text-decoration:none;color:rgba(226,232,240,.92)}
+      .navcard:hover{background:rgba(255,255,255,.10);border-color:rgba(226,232,240,.22)}
+      .navcard .ic{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;background:rgba(96,165,250,.14);border:1px solid rgba(96,165,250,.22);color:rgba(96,165,250,.95)}
+      .navcard .sub{color:rgba(148,163,184,.88);font-size:13px}
+      .kpi{border:1px solid rgba(148,163,184,.18);background:rgba(255,255,255,.06);border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+      .kpi .t{color:rgba(226,232,240,.78);font-weight:800;font-size:13px}
+      .kpi .v{font-size:26px;font-weight:900}
+      .kpi .s{color:rgba(148,163,184,.90);font-size:13px}
+      .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(2,6,23,.18);border:1px solid rgba(226,232,240,.14);color:rgba(226,232,240,.90);font-weight:900}
+      .dot{width:10px;height:10px;border-radius:999px}
+      .dot.b{background:rgba(96,165,250,.92)}
+      .dot.g{background:rgba(52,211,153,.92)}
+      .dot.p{background:rgba(244,114,182,.92)}
+      .dot.y{background:rgba(251,191,36,.92)}
+      .btn-accent{background:linear-gradient(135deg,rgba(52,211,153,.92),rgba(96,165,250,.86));border:0;color:#041016;font-weight:900}
+      .btn-accent:hover{filter:brightness(1.03)}
+      .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(226,232,240,.18);color:rgba(226,232,240,.90);font-weight:900}
+      .btn-ghost:hover{background:rgba(255,255,255,.10);border-color:rgba(226,232,240,.22)}
+      .form-control,.form-select{background:rgba(2,6,23,.18)!important;color:rgba(226,232,240,.92)!important;border:1px solid rgba(226,232,240,.16)!important}
+      .table{color:rgba(226,232,240,.92)}
+      .table thead th{background:rgba(255,255,255,.06)!important;border-bottom:1px solid rgba(226,232,240,.12)!important}
+      .table td,.table th{border-color:rgba(226,232,240,.10)!important}
+      .badge-soft{border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.16);color:rgba(226,232,240,.92);font-weight:900}
+      .asset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+      @media (max-width: 991.98px){.asset-grid{grid-template-columns:1fr}}
+      .asset{border:1px solid rgba(148,163,184,.18);background:rgba(255,255,255,.06);border-radius:18px;padding:12px;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+      .asset:hover{transform:translateY(-2px);border-color:rgba(226,232,240,.22);background:rgba(255,255,255,.09)}
+      .asset.active{border-color:rgba(52,211,153,.30);background:linear-gradient(180deg,rgba(52,211,153,.10),rgba(255,255,255,.06))}
+      .asset .name{font-weight:900}
+      .asset .meta{color:rgba(148,163,184,.88);font-size:13px}
+      .mini{font-size:12px;color:rgba(148,163,184,.90)}
+      .bar{height:10px;border-radius:999px;background:rgba(226,232,240,.10);overflow:hidden}
+      .bar span{display:block;height:100%;border-radius:999px;background:rgba(52,211,153,.86)}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="dashboard.html"><i class="bi bi-bank2 me-2"></i>财务信息数据管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">仪表盘</a></li>
+            <li class="nav-item"><a class="nav-link" href="vouchers-ledger.html">凭证总账</a></li>
+            <li class="nav-item"><a class="nav-link" href="ar-ap.html">往来应收应付</a></li>
+            <li class="nav-item"><a class="nav-link" href="expense-reimburse.html">费用报销</a></li>
+            <li class="nav-item"><a class="nav-link active" href="assets.html">固定资产</a></li>
+            <li class="nav-item"><a class="nav-link" href="tax-invoice.html">税务发票</a></li>
+            <li class="nav-item"><a class="nav-link" href="reports.html">报表分析</a></li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <a class="btn btn-ghost btn-sm px-3" href="#register"><i class="bi bi-clipboard2-plus me-1"></i>登记</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#depreciation"><i class="bi bi-calculator me-1"></i>折旧</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#inventory"><i class="bi bi-box-seam me-1"></i>盘点</a>
+            <a class="btn btn-ghost btn-sm px-3" href="login.html?logout=1"><i class="bi bi-box-arrow-right me-1"></i>退出登录</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero p-4 mb-4 section" id="top">
+          <div class="in">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+              <div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <span class="chip"><i class="bi bi-calendar3"></i>期间：2026-04</span>
+                  <span class="chip"><i class="bi bi-cpu"></i>计提方式：直线法</span>
+                  <span class="chip"><i class="bi bi-link-45deg"></i>联动：折旧→凭证→费用归集</span>
+                </div>
+                <h1 class="h2 mb-2">固定资产与折旧管理</h1>
+                <p class="mb-0">以资产卡片为核心，管理入账、折旧、盘点与处置全过程。系统支持按类别设置折旧年限与残值率，并将折旧计提结果自动生成凭证草稿，确保费用归集一致。</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-accent px-3" type="button" id="btnGenDep"><i class="bi bi-lightning-charge me-1"></i>生成折旧凭证</button>
+                <a class="btn btn-ghost px-3" href="#depreciation"><i class="bi bi-graph-up me-1"></i>查看计提</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shell">
+          <aside class="side section">
+            <div class="panel">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">导航与概览</div>
+                  <div class="text-muted small">锚点 + 下滑动画</div>
+                </div>
+                <span class="badge rounded-pill badge-soft">资产 8 项</span>
+              </div>
+              <div class="bd">
+                <div class="d-grid gap-2">
+                  <a class="navcard" href="#register"><span class="ic"><i class="bi bi-clipboard2-plus"></i></span><span><div class="fw-bold">资产卡片登记</div><div class="sub">入账要素、使用部门、折旧口径</div></span></a>
+                  <a class="navcard" href="#depreciation"><span class="ic"><i class="bi bi-calculator"></i></span><span><div class="fw-bold">折旧计提</div><div class="sub">折旧计划、当期计提、净值变化</div></span></a>
+                  <a class="navcard" href="#inventory"><span class="ic"><i class="bi bi-box-seam"></i></span><span><div class="fw-bold">盘点与处置</div><div class="sub">盘盈盘亏、报废/出售、处置损益</div></span></a>
+                </div>
+                <div class="mt-3">
+                  <div class="kpi p-3">
+                    <div class="t">资产原值</div>
+                    <div class="v">¥ 1,286,500</div>
+                    <div class="d-flex justify-content-between mt-2"><span class="s">累计折旧：¥ 312,460</span><span class="badge rounded-pill badge-soft">净值 ¥ 974,040</span></div>
+                  </div>
+                </div>
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                  <span class="pill"><span class="dot g"></span>生产设备</span>
+                  <span class="pill"><span class="dot b"></span>办公设备</span>
+                  <span class="pill"><span class="dot y"></span>车辆</span>
+                  <span class="pill"><span class="dot p"></span>软件系统</span>
+                </div>
+                <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>点击资产卡片可在右侧展示折旧计划与净值曲线。</div>
+              </div>
+            </div>
+          </aside>
+
+          <main class="section">
+            <section class="panel section" id="register">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">资产卡片登记</div>
+                  <div class="text-muted small">子功能：资产入账要素维护、卡片台账与筛选</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnNewAsset"><i class="bi bi-plus-circle me-1"></i>新增资产</button>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnLockAsset"><i class="bi bi-shield-lock me-1"></i>锁定口径</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-xl-6">
+                    <div class="row g-3">
+                      <div class="col-12">
+                        <div class="asset-grid" id="assetGrid">
+                          <div class="asset active" data-code="FA-0007">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">服务器（Dell R740）</div>
+                                <div class="meta">FA-0007｜研发部｜入账：2024-07-15</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-primary">办公设备</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 168,000｜残值率 5%｜年限 5 年</div>
+                            <div class="mt-2 bar" title="折旧进度"><span style="width:34%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0001">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">数控加工中心（VMC850）</div>
+                                <div class="meta">FA-0001｜生产部｜入账：2023-11-10</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-success">生产设备</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 520,000｜残值率 5%｜年限 10 年</div>
+                            <div class="mt-2 bar"><span style="width:24%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0003">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">商用车（厢式货车）</div>
+                                <div class="meta">FA-0003｜物流组｜入账：2024-02-20</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-warning">车辆</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 146,500｜残值率 10%｜年限 5 年</div>
+                            <div class="mt-2 bar"><span style="width:18%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0005">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">ERP系统软件许可</div>
+                                <div class="meta">FA-0005｜财务部｜入账：2025-01-05</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-danger">无形资产</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 220,000｜残值率 0%｜年限 3 年</div>
+                            <div class="mt-2 bar"><span style="width:42%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0002">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">激光切割机（LF-3015）</div>
+                                <div class="meta">FA-0002｜生产部｜入账：2024-09-01</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-success">生产设备</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 182,000｜残值率 5%｜年限 8 年</div>
+                            <div class="mt-2 bar"><span style="width:10%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0004">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">办公电脑（批量 20 台）</div>
+                                <div class="meta">FA-0004｜行政部｜入账：2025-06-12</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-primary">办公设备</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 96,000｜残值率 5%｜年限 3 年</div>
+                            <div class="mt-2 bar"><span style="width:26%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0006">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">空压机（AC-22）</div>
+                                <div class="meta">FA-0006｜生产部｜入账：2024-05-28</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-success">生产设备</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 54,000｜残值率 5%｜年限 8 年</div>
+                            <div class="mt-2 bar"><span style="width:14%"></span></div>
+                          </div>
+                          <div class="asset" data-code="FA-0008">
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                              <div>
+                                <div class="name">条码打印机（Zebra ZT410）</div>
+                                <div class="meta">FA-0008｜仓储组｜入账：2025-10-18</div>
+                              </div>
+                              <span class="badge rounded-pill text-bg-primary">办公设备</span>
+                            </div>
+                            <div class="mt-2 mini">原值 ¥ 20,000｜残值率 5%｜年限 3 年</div>
+                            <div class="mt-2 bar"><span style="width:16%"></span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-xl-6">
+                    <div class="panel" style="background:rgba(255,255,255,.04);box-shadow:none">
+                      <div class="hd">
+                        <div>
+                          <div class="fw-bold">卡片详情（选中资产）</div>
+                          <div class="text-muted small">字段：原值/残值率/折旧年限/部门/状态</div>
+                        </div>
+                        <span class="badge rounded-pill badge-soft" id="selCode">FA-0007</span>
+                      </div>
+                      <div class="bd">
+                        <div class="row g-3">
+                          <div class="col-12 col-md-6">
+                            <label class="form-label">资产名称</label>
+                            <input class="form-control" id="dName" value="服务器（Dell R740）">
+                          </div>
+                          <div class="col-12 col-md-6">
+                            <label class="form-label">使用部门</label>
+                            <select class="form-select" id="dDept">
+                              <option>生产部</option>
+                              <option>行政部</option>
+                              <option selected>研发部</option>
+                              <option>财务部</option>
+                              <option>仓储组</option>
+                            </select>
+                          </div>
+                          <div class="col-12 col-md-6">
+                            <label class="form-label">原值</label>
+                            <input class="form-control" id="dCost" value="168000">
+                          </div>
+                          <div class="col-12 col-md-6">
+                            <label class="form-label">入账日期</label>
+                            <input class="form-control" id="dStart" value="2024-07-15">
+                          </div>
+                          <div class="col-12 col-md-4">
+                            <label class="form-label">残值率</label>
+                            <select class="form-select" id="dSalvage">
+                              <option>0%</option>
+                              <option selected>5%</option>
+                              <option>10%</option>
+                            </select>
+                          </div>
+                          <div class="col-12 col-md-4">
+                            <label class="form-label">折旧年限</label>
+                            <select class="form-select" id="dLife">
+                              <option>3 年</option>
+                              <option selected>5 年</option>
+                              <option>8 年</option>
+                              <option>10 年</option>
+                            </select>
+                          </div>
+                          <div class="col-12 col-md-4">
+                            <label class="form-label">状态</label>
+                            <select class="form-select" id="dStatus">
+                              <option selected>在用</option>
+                              <option>停用</option>
+                              <option>报废</option>
+                              <option>已处置</option>
+                            </select>
+                          </div>
+                          <div class="col-12 d-flex flex-wrap gap-2">
+                            <button class="btn btn-accent" type="button" id="btnSaveCard"><i class="bi bi-save2 me-1"></i>保存卡片</button>
+                            <button class="btn btn-ghost" type="button" id="btnDepPreview"><i class="bi bi-eye me-1"></i>预览折旧</button>
+                            <button class="btn btn-ghost" type="button" id="btnDispose"><i class="bi bi-trash3 me-1"></i>发起处置</button>
+                          </div>
+                          <div class="col-12 text-muted small"><i class="bi bi-info-circle me-1"></i>卡片字段用于演示维护与折旧联动，不依赖后端。</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel section mt-4" id="depreciation">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">折旧计提与净值趋势</div>
+                  <div class="text-muted small">子功能：当期折旧测算、折旧计划与凭证草稿生成</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge rounded-pill badge-soft">当期折旧：¥ 18,760</span>
+                  <span class="badge rounded-pill badge-soft">累计折旧：¥ 312,460</span>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-lg-7">
+                    <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                        <div class="fw-bold">选中资产净值曲线</div>
+                        <div class="d-flex flex-wrap gap-2">
+                          <span class="pill"><span class="dot g"></span>净值</span>
+                          <span class="pill"><span class="dot b"></span>累计折旧</span>
+                        </div>
+                      </div>
+                      <canvas id="chartNBV" height="210"></canvas>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-5">
+                    <div class="p-3 rounded-4 h-100" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">当期折旧汇总</div>
+                      <div class="table-responsive">
+                        <table class="table align-middle mb-0" id="tblDep">
+                          <thead>
+                            <tr>
+                              <th>类别</th>
+                              <th class="text-end">当期折旧</th>
+                              <th style="width:130px">归集科目</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td>生产设备</td><td class="text-end">9,880</td><td>制造费用</td></tr>
+                            <tr><td>办公设备</td><td class="text-end">4,260</td><td>管理费用</td></tr>
+                            <tr><td>车辆</td><td class="text-end">2,080</td><td>销售费用</td></tr>
+                            <tr><td>无形资产</td><td class="text-end">2,540</td><td>管理费用</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="mt-3 d-grid gap-2">
+                        <button class="btn btn-accent" type="button" id="btnPostDep"><i class="bi bi-journal-check me-1"></i>生成凭证草稿</button>
+                        <button class="btn btn-ghost" type="button" id="btnAuditDep"><i class="bi bi-shield-check me-1"></i>校验折旧口径</button>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-lightbulb me-1"></i>折旧汇总可直接对应凭证分录：借（费用/制造费用）贷（累计折旧/摊销）。</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <div class="panel" style="background:rgba(255,255,255,.04);box-shadow:none">
+                    <div class="hd">
+                      <div>
+                        <div class="fw-bold">折旧计划（未来 6 期）</div>
+                        <div class="text-muted small">按当前口径测算，便于现金流与利润预测</div>
+                      </div>
+                      <button class="btn btn-ghost btn-sm" type="button" id="btnRecalc"><i class="bi bi-arrow-repeat me-1"></i>重算</button>
+                    </div>
+                    <div class="bd">
+                      <div class="table-responsive">
+                        <table class="table align-middle mb-0" id="tblPlan">
+                          <thead>
+                            <tr>
+                              <th style="width:120px">期间</th>
+                              <th class="text-end">预计折旧</th>
+                              <th class="text-end">预计净值</th>
+                              <th style="width:180px">备注</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td>2026-05</td><td class="text-end">18,760</td><td class="text-end">955,280</td><td>常规计提</td></tr>
+                            <tr><td>2026-06</td><td class="text-end">18,760</td><td class="text-end">936,520</td><td>常规计提</td></tr>
+                            <tr><td>2026-07</td><td class="text-end">18,760</td><td class="text-end">917,760</td><td>常规计提</td></tr>
+                            <tr><td>2026-08</td><td class="text-end">18,760</td><td class="text-end">899,000</td><td>常规计提</td></tr>
+                            <tr><td>2026-09</td><td class="text-end">18,760</td><td class="text-end">880,240</td><td>常规计提</td></tr>
+                            <tr><td>2026-10</td><td class="text-end">18,760</td><td class="text-end">861,480</td><td>常规计提</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>计划用于管理层预估费用影响，实际计提以当期卡片状态为准。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel section mt-4" id="inventory">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">盘点与处置</div>
+                  <div class="text-muted small">子功能：盘点任务、差异登记、处置流程与损益测算</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnNewInv"><i class="bi bi-clipboard-check me-1"></i>发起盘点</button>
+                  <button class="btn btn-ghost btn-sm" type="button" id="btnExportInv"><i class="bi bi-download me-1"></i>导出清单</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-lg-6">
+                    <div class="p-3 rounded-4" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">盘点任务</div>
+                      <div class="d-grid gap-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <div class="fw-semibold"><i class="bi bi-box-seam me-2" style="color:rgba(96,165,250,.9)"></i>INV-202604-01｜生产部资产盘点</div>
+                          <span class="badge rounded-pill text-bg-primary">进行中</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                          <div class="fw-semibold"><i class="bi bi-building me-2" style="color:rgba(52,211,153,.9)"></i>INV-202604-02｜行政部资产盘点</div>
+                          <span class="badge rounded-pill text-bg-success">已完成</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                          <div class="fw-semibold"><i class="bi bi-pc-display me-2" style="color:rgba(244,114,182,.9)"></i>INV-202604-03｜研发部资产盘点</div>
+                          <span class="badge rounded-pill text-bg-warning">待开始</span>
+                        </div>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-info-circle me-1"></i>盘点完成后可自动生成差异处理建议：报废/处置/调整。</div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-6">
+                    <div class="p-3 rounded-4 h-100" style="border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.18)">
+                      <div class="fw-bold mb-2">处置损益测算</div>
+                      <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">处置方式</label>
+                          <select class="form-select" id="dispType">
+                            <option selected>出售</option>
+                            <option>报废</option>
+                            <option>转让</option>
+                          </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">处置收入（含税）</label>
+                          <input class="form-control" id="dispIncome" value="12000">
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">处置税额</label>
+                          <input class="form-control" id="dispTax" value="679.25">
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">处置费用</label>
+                          <input class="form-control" id="dispFee" value="800">
+                        </div>
+                        <div class="col-12 d-grid">
+                          <button class="btn btn-accent" type="button" id="btnCalcDisp"><i class="bi bi-calculator me-1"></i>测算损益</button>
+                        </div>
+                        <div class="col-12">
+                          <div class="kpi p-3">
+                            <div class="t">预计处置损益</div>
+                            <div class="v" id="dispPL">¥ 0</div>
+                            <div class="s">净值将取自当前选中资产的期末净值口径</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mt-3 text-muted small"><i class="bi bi-shield-check me-1"></i>处置完成后可生成凭证草稿，并回写资产状态为“已处置”。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const authed = localStorage.getItem('fimds_auth') === '1';
+        if (!authed) {
+          const next = encodeURIComponent(location.pathname.split('/').pop() || 'dashboard.html');
+          location.replace('login.html?next=' + next);
+          return;
+        }
+        function smoothScrollTo(targetId) {
+          const $t = $(targetId);
+          if (!$t.length) return;
+          const top = $t.offset().top - 88;
+          $('html, body').stop(true).animate({ scrollTop: top }, reduceMotion ? 0 : 520, 'swing');
+        }
+        $(document).on('click', 'a[href^=\"#\"]', function (e) {
+          const href = $(this).attr('href');
+          if (href && href.length > 1 && $(href).length) { e.preventDefault(); smoothScrollTo(href); }
+        });
+        const io = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) en.target.classList.add('in-view'); }); }, { threshold: 0.14 });
+        document.querySelectorAll('.section').forEach(function (el) { io.observe(el); });
+
+        function toast(message, kind) {
+          $('#toastDyn').remove();
+          const html = [
+            '<div id=\"toastDyn\" class=\"toast align-items-center text-bg-' + kind + ' border-0 position-fixed bottom-0 end-0 m-3\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" style=\"z-index:1080\">',
+            '  <div class=\"d-flex\">',
+            '    <div class=\"toast-body\"><i class=\"bi bi-info-circle me-2\"></i>' + message + '</div>',
+            '    <button type=\"button\" class=\"btn-close btn-close-white me-2 m-auto\" data-bs-dismiss=\"toast\" aria-label=\"关闭\"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+          $('body').append(html);
+          bootstrap.Toast.getOrCreateInstance(document.getElementById('toastDyn'), { delay: 2400 }).show();
+        }
+
+        const assets = {
+          'FA-0007': { name: '服务器（Dell R740）', start: '2024-07', cost: 168000, salvage: 0.05, life: 60, dept: '研发部' },
+          'FA-0001': { name: '数控加工中心（VMC850）', start: '2023-11', cost: 520000, salvage: 0.05, life: 120, dept: '生产部' },
+          'FA-0003': { name: '商用车（厢式货车）', start: '2024-02', cost: 146500, salvage: 0.10, life: 60, dept: '物流组' },
+          'FA-0005': { name: 'ERP系统软件许可', start: '2025-01', cost: 220000, salvage: 0.00, life: 36, dept: '财务部' },
+          'FA-0002': { name: '激光切割机（LF-3015）', start: '2024-09', cost: 182000, salvage: 0.05, life: 96, dept: '生产部' },
+          'FA-0004': { name: '办公电脑（批量 20 台）', start: '2025-06', cost: 96000, salvage: 0.05, life: 36, dept: '行政部' },
+          'FA-0006': { name: '空压机（AC-22）', start: '2024-05', cost: 54000, salvage: 0.05, life: 96, dept: '生产部' },
+          'FA-0008': { name: '条码打印机（Zebra ZT410）', start: '2025-10', cost: 20000, salvage: 0.05, life: 36, dept: '仓储组' }
+        };
+
+        function yyyymmToDate(s) { const p = String(s).split('-'); return new Date(Number(p[0]), Number(p[1]) - 1, 1); }
+        function addMonths(d, m) { return new Date(d.getFullYear(), d.getMonth() + m, 1); }
+        function fmtYM(d) { const y = d.getFullYear(); const mm = String(d.getMonth() + 1).padStart(2, '0'); return y + '-' + mm; }
+
+        let chartNBV = null;
+        function renderChart(code) {
+          const a = assets[code];
+          const start = yyyymmToDate(a.start);
+          const now = yyyymmToDate('2026-04');
+          const monthsUsed = Math.max(0, Math.min(a.life, (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1));
+          const depBase = a.cost * (1 - a.salvage);
+          const mDep = depBase / a.life;
+          const labels = [];
+          const nbv = [];
+          const acc = [];
+          for (let i = 0; i < 10; i += 1) {
+            const idx = Math.max(0, monthsUsed - 9 + i);
+            const d = addMonths(start, idx);
+            const aDep = Math.min(depBase, mDep * (idx + 1));
+            const v = Math.max(a.cost - aDep, a.cost * a.salvage);
+            labels.push(fmtYM(d));
+            nbv.push(Math.round(v));
+            acc.push(Math.round(aDep));
+          }
+          const ctx = document.getElementById('chartNBV');
+          if (!ctx) return;
+          if (chartNBV) chartNBV.destroy();
+          chartNBV = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                { label: '净值', data: nbv, borderColor: 'rgba(52,211,153,.92)', backgroundColor: 'rgba(52,211,153,.12)', tension: .35, fill: true, pointRadius: 2.5 },
+                { label: '累计折旧', data: acc, borderColor: 'rgba(96,165,250,.92)', backgroundColor: 'rgba(96,165,250,.10)', tension: .35, fill: true, pointRadius: 2.5 }
+              ]
+            },
+            options: {
+              plugins: { legend: { labels: { color: 'rgba(226,232,240,.86)' } }, tooltip: { callbacks: { label: function (c) { return c.dataset.label + '：¥ ' + Number(c.raw).toLocaleString('zh-CN'); } } } },
+              scales: {
+                x: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } },
+                y: { ticks: { color: 'rgba(148,163,184,.86)' }, grid: { color: 'rgba(226,232,240,.08)' } }
+              }
+            }
+          });
+        }
+
+        function setDetail(code) {
+          const a = assets[code];
+          if (!a) return;
+          $('#selCode').text(code);
+          $('#dName').val(a.name);
+          $('#dDept').val(a.dept);
+          $('#dCost').val(String(a.cost));
+          $('#dStart').val(a.start + '-15');
+          $('#dSalvage').val(String(Math.round(a.salvage * 100)) + '%');
+          const lifeMap = { 36: '3 年', 60: '5 年', 96: '8 年', 120: '10 年' };
+          $('#dLife').val(lifeMap[a.life] || '5 年');
+          renderChart(code);
+        }
+
+        $('#assetGrid').on('click', '.asset', function () {
+          $('#assetGrid .asset').removeClass('active');
+          $(this).addClass('active');
+          setDetail($(this).data('code'));
+        });
+
+        $('#btnSaveCard').on('click', function () { toast('卡片已保存：' + $('#selCode').text(), 'success'); });
+        $('#btnDepPreview').on('click', function () { toast('已预览折旧：当期计提口径为直线法', 'primary'); });
+        $('#btnDispose').on('click', function () { toast('已发起处置流程：待审批与清理凭证', 'warning'); });
+        $('#btnNewAsset').on('click', function () { toast('已打开新增资产表单（演示）', 'secondary'); });
+        $('#btnLockAsset').on('click', function () { toast('口径已锁定：残值率/年限调整需审批', 'primary'); });
+        $('#btnGenDep').on('click', function () { smoothScrollTo('#depreciation'); toast('已生成折旧汇总预览（当期 ¥ 18,760）', 'success'); });
+        $('#btnPostDep').on('click', function () { toast('已生成凭证草稿：记-202604-062（折旧计提）', 'success'); });
+        $('#btnAuditDep').on('click', function () { toast('校验完成：折旧口径一致，未发现异常卡片', 'primary'); });
+        $('#btnRecalc').on('click', function () { toast('已按当前卡片状态重新测算折旧计划', 'secondary'); });
+        $('#btnNewInv').on('click', function () { toast('已发起盘点：INV-202604-04（仓储组）', 'primary'); });
+        $('#btnExportInv').on('click', function () { toast('已导出清单：固定资产盘点清单_2026-04.xlsx', 'secondary'); });
+
+        $('#btnCalcDisp').on('click', function () {
+          const code = $('#selCode').text();
+          const a = assets[code];
+          const income = Number($('#dispIncome').val() || 0);
+          const tax = Number($('#dispTax').val() || 0);
+          const fee = Number($('#dispFee').val() || 0);
+          const start = yyyymmToDate(a.start);
+          const now = yyyymmToDate('2026-04');
+          const monthsUsed = Math.max(0, Math.min(a.life, (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1));
+          const depBase = a.cost * (1 - a.salvage);
+          const mDep = depBase / a.life;
+          const accDep = Math.min(depBase, mDep * monthsUsed);
+          const nbv = Math.max(a.cost - accDep, a.cost * a.salvage);
+          const netIncome = Math.max(0, income - tax);
+          const pl = Math.round((netIncome - fee) - nbv);
+          $('#dispPL').text('¥ ' + pl.toLocaleString('zh-CN'));
+          toast('已测算：净值 ¥ ' + Math.round(nbv).toLocaleString('zh-CN') + '；损益 ' + pl.toLocaleString('zh-CN'), pl >= 0 ? 'success' : 'danger');
+        });
+
+        setDetail('FA-0007');
+      })();
+    </script>
+  </body>
+</html>

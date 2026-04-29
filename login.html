@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录 | 中小型企业财务信息数据管理系统</title>
+    <link rel="preconnect" href="https://cdn.bootcdn.net" crossorigin>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+      :root{--bg1:#06142c;--bg2:#071a37;--line:rgba(226,232,240,.14);--card:rgba(255,255,255,.06);--text:rgba(226,232,240,.92);--muted:rgba(148,163,184,.92);--indigo:#6366f1;--cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24;--shadow:0 18px 52px rgba(0,0,0,.48)}
+      html{scroll-behavior:auto}
+      body{min-height:100vh;background:radial-gradient(900px 520px at 14% 10%,rgba(99,102,241,.24),transparent 60%),radial-gradient(900px 520px at 86% 12%,rgba(34,211,238,.20),transparent 60%),radial-gradient(900px 520px at 70% 90%,rgba(52,211,153,.14),transparent 60%),linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 52%,#071028 100%);color:var(--text)}
+      .navbar{background:rgba(7,16,40,.62)!important;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+      .navbar-brand,.nav-link{color:rgba(226,232,240,.92)!important}
+      .nav-link{opacity:.78}
+      .nav-link:hover{opacity:1}
+      .page{padding-top:86px;padding-bottom:42px}
+      .hero{border:1px solid var(--line);background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(34,211,238,.16),rgba(52,211,153,.10));border-radius:22px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+      .hero::after{content:"";position:absolute;inset:-2px;background:radial-gradient(520px 220px at 16% 0%,rgba(99,102,241,.26),transparent 60%),radial-gradient(520px 220px at 88% 0%,rgba(34,211,238,.22),transparent 60%);pointer-events:none}
+      .hero .in{position:relative}
+      .hero h1{font-weight:900;letter-spacing:.2px}
+      .hero p{color:rgba(226,232,240,.82);max-width:72ch}
+      .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid rgba(226,232,240,.16);background:rgba(2,6,23,.18);color:rgba(226,232,240,.86);font-weight:800}
+      .chip i{color:rgba(34,211,238,.95)}
+      .section{scroll-margin-top:96px;opacity:0;transform:translateY(14px);transition:transform 520ms ease,opacity 520ms ease}
+      .section.in-view{opacity:1;transform:translateY(0)}
+      .panel{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.34)}
+      .panel .hd{padding:14px 16px;border-bottom:1px solid rgba(148,163,184,.18);display:flex;align-items:end;justify-content:space-between;gap:12px}
+      .panel .bd{padding:16px}
+      .cardx{border:1px solid rgba(148,163,184,.18);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.05));border-radius:18px;box-shadow:0 12px 34px rgba(0,0,0,.28)}
+      .cardx .t{color:rgba(226,232,240,.78);font-weight:800;font-size:13px}
+      .cardx .v{font-size:24px;font-weight:900}
+      .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(2,6,23,.18);border:1px solid rgba(226,232,240,.14);color:rgba(226,232,240,.90);font-weight:900}
+      .dot{width:10px;height:10px;border-radius:999px}
+      .dot.i{background:rgba(99,102,241,.92)}
+      .dot.c{background:rgba(34,211,238,.92)}
+      .dot.e{background:rgba(52,211,153,.92)}
+      .dot.a{background:rgba(251,191,36,.92)}
+      .btn-accent{background:linear-gradient(135deg,rgba(34,211,238,.92),rgba(99,102,241,.86));border:0;color:#061024;font-weight:900}
+      .btn-accent:hover{filter:brightness(1.03)}
+      .btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(226,232,240,.18);color:rgba(226,232,240,.90);font-weight:900}
+      .btn-ghost:hover{background:rgba(255,255,255,.10);border-color:rgba(226,232,240,.22)}
+      .form-control,.form-select{background:rgba(2,6,23,.18)!important;color:rgba(226,232,240,.92)!important;border:1px solid rgba(226,232,240,.16)!important}
+      .form-control::placeholder{color:rgba(148,163,184,.80)}
+      .form-label{color:rgba(226,232,240,.86);font-weight:800}
+      .help{color:rgba(148,163,184,.92);font-size:13px}
+      .kbd{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;border:1px solid rgba(226,232,240,.18);background:rgba(2,6,23,.18);font-weight:900;color:rgba(226,232,240,.88);font-size:12px}
+      .list{display:grid;grid-template-columns:1fr;gap:10px}
+      .li{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;border:1px solid rgba(148,163,184,.18);background:rgba(2,6,23,.16)}
+      .li i{font-size:18px}
+      .li .h{font-weight:900}
+      .li .d{color:rgba(148,163,184,.92);font-size:13px;margin-top:2px}
+      .safe{border-left:3px solid rgba(34,211,238,.65);padding-left:12px;color:rgba(148,163,184,.92)}
+      .hintbox{border:1px dashed rgba(226,232,240,.18);background:rgba(2,6,23,.14);border-radius:16px;padding:12px}
+      .hintbox .k{color:rgba(148,163,184,.92);font-weight:800}
+      .hintbox .v{font-weight:900}
+      .caps{display:none}
+      .caps.on{display:inline-flex}
+      .lock{display:none}
+      .lock.on{display:block}
+      .mini{font-size:12px;color:rgba(148,163,184,.92)}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid px-3 px-lg-4">
+        <a class="navbar-brand fw-semibold" href="login.html"><i class="bi bi-bank2 me-2"></i>财务信息数据管理系统</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="切换导航"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="topNav">
+          <ul class="navbar-nav ms-auto gap-lg-1">
+            <li class="nav-item"><a class="nav-link active" href="login.html">登录</a></li>
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">首页</a></li>
+            <li class="nav-item"><a class="nav-link" href="reports.html">报表分析</a></li>
+          </ul>
+          <div class="d-flex align-items-center ms-lg-3 mt-3 mt-lg-0 gap-2">
+            <a class="btn btn-ghost btn-sm px-3" href="#form"><i class="bi bi-person-check me-1"></i>账号登录</a>
+            <a class="btn btn-ghost btn-sm px-3" href="#tips"><i class="bi bi-shield-lock me-1"></i>使用提示</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="container-fluid px-3 px-lg-4">
+        <div class="hero p-4 mb-4 section" id="top">
+          <div class="in">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+              <div>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <span class="chip"><i class="bi bi-shield-check"></i>登录后进入首页</span>
+                  <span class="chip"><i class="bi bi-link-45deg"></i>保护：页面访问校验</span>
+                  <span class="chip"><i class="bi bi-speedometer2"></i>轻量：无需编译/后端</span>
+                </div>
+                <h1 class="h2 mb-2">系统登录</h1>
+                <p class="mb-0">本系统采用页面级访问校验：未登录访问任意业务页面将自动跳转到登录页，登录成功后再跳转回目标页面或首页。</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="pill"><span class="dot i"></span>凭证/总账</span>
+                <span class="pill"><span class="dot c"></span>往来/报销</span>
+                <span class="pill"><span class="dot e"></span>资产/税务</span>
+                <span class="pill"><span class="dot a"></span>报表/审计</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-xxl-7">
+            <section class="panel section" id="form">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">账号登录</div>
+                  <div class="text-muted small">使用指定账号密码登录后才可进入首页</div>
+                </div>
+                <span class="badge rounded-pill text-bg-secondary" id="statePill">未登录</span>
+              </div>
+              <div class="bd">
+                <div class="row g-3">
+                  <div class="col-12 col-lg-7">
+                    <form id="loginForm" autocomplete="off">
+                      <div class="mb-3">
+                        <label class="form-label" for="u">账号</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-transparent text-white-50 border-0" style="border:1px solid rgba(226,232,240,.16)!important;border-right:0!important"><i class="bi bi-person"></i></span>
+                          <input class="form-control" id="u" placeholder="请输入账号" required>
+                        </div>
+                        <div class="help mt-1">支持回车登录；将自动跳转到目标页面或首页。</div>
+                      </div>
+                      <div class="mb-2">
+                        <label class="form-label" for="p">密码</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-transparent text-white-50 border-0" style="border:1px solid rgba(226,232,240,.16)!important;border-right:0!important"><i class="bi bi-key"></i></span>
+                          <input class="form-control" id="p" type="password" placeholder="请输入密码" required>
+                          <button class="btn btn-ghost" type="button" id="btnToggle"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="mt-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                          <span class="kbd caps" id="caps"><i class="bi bi-capslock"></i>大写锁定</span>
+                          <span class="mini" id="nextHint">登录后将进入：首页</span>
+                        </div>
+                      </div>
+                      <div class="lock mt-3" id="lockHint">
+                        <div class="hintbox">
+                          <div class="k mb-1"><i class="bi bi-shield-exclamation me-1"></i>暂时限制</div>
+                          <div class="v">登录失败次数过多，请稍后再试</div>
+                        </div>
+                      </div>
+                      <div class="mt-3 d-grid gap-2">
+                        <button class="btn btn-accent py-2" type="submit" id="btnLogin"><i class="bi bi-box-arrow-in-right me-2"></i>登录</button>
+                        <button class="btn btn-ghost py-2" type="button" id="btnClear"><i class="bi bi-box-arrow-right me-2"></i>退出登录</button>
+                      </div>
+                      <div class="mt-3 safe small">
+                        登录校验基于浏览器本地存储。若需切换账号，可先点击“退出登录”。本演示不对接后端，不上传任何数据。
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-12 col-lg-5">
+                    <div class="cardx p-3 h-100">
+                      <div class="t">当前会话</div>
+                      <div class="v" id="sessUser">—</div>
+                      <div class="mt-2 help">状态将用于业务页面访问校验与跳转。</div>
+                      <div class="mt-3 hintbox">
+                        <div class="k">最近登录时间</div>
+                        <div class="v mt-1" id="sessTime">—</div>
+                        <div class="k mt-3">跳转目标</div>
+                        <div class="v mt-1" id="sessNext">—</div>
+                      </div>
+                      <div class="mt-3 d-flex flex-wrap gap-2">
+                        <span class="pill"><span class="dot e"></span>成功后自动跳转</span>
+                        <span class="pill"><span class="dot c"></span>支持返回目标页</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel section mt-4" id="tips">
+              <div class="hd">
+                <div>
+                  <div class="fw-bold">使用提示</div>
+                  <div class="text-muted small">子功能：跳转规则说明、常见问题</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" type="button" id="btnGoHome"><i class="bi bi-house-door me-1"></i>进入首页</button>
+              </div>
+              <div class="bd">
+                <div class="list">
+                  <div class="li">
+                    <i class="bi bi-arrow-left-right" style="color:rgba(34,211,238,.95)"></i>
+                    <div>
+                      <div class="h">未登录访问</div>
+                      <div class="d">打开任意业务页面（例如“税务发票”或“报表分析”）会自动跳转到登录页，并携带目标页面参数。</div>
+                    </div>
+                  </div>
+                  <div class="li">
+                    <i class="bi bi-person-check" style="color:rgba(52,211,153,.95)"></i>
+                    <div>
+                      <div class="h">登录成功跳转</div>
+                      <div class="d">如果存在目标页面参数，则跳回目标页面；否则默认进入首页（dashboard.html）。</div>
+                    </div>
+                  </div>
+                  <div class="li">
+                    <i class="bi bi-clipboard-data" style="color:rgba(99,102,241,.95)"></i>
+                    <div>
+                      <div class="h">数据口径说明</div>
+                      <div class="d">业务页面中的表格、图表与指标为真实样例数据，用于展示流程与信息结构，不包含“模拟/测试”字样。</div>
+                    </div>
+                  </div>
+                  <div class="li">
+                    <i class="bi bi-shield-lock" style="color:rgba(251,191,36,.95)"></i>
+                    <div>
+                      <div class="h">安全边界</div>
+                      <div class="d">本演示为纯前端登录校验，仅用于页面跳转控制。若上生产，应接入后端鉴权与会话机制。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-12 col-xxl-5">
+            <div class="row g-3 section">
+              <div class="col-12">
+                <div class="cardx p-3">
+                  <div class="t">访问控制</div>
+                  <div class="v">页面级校验</div>
+                  <div class="mt-2 help">在每个业务页面初始化时检查登录状态，未登录则跳转登录页。</div>
+                  <div class="mt-3 d-flex flex-wrap gap-2">
+                    <span class="pill"><span class="dot c"></span>localStorage</span>
+                    <span class="pill"><span class="dot a"></span>next 参数</span>
+                    <span class="pill"><span class="dot e"></span>replace 跳转</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="cardx p-3">
+                  <div class="t">快捷入口</div>
+                  <div class="v">常用模块</div>
+                  <div class="mt-3 d-grid gap-2">
+                    <a class="btn btn-ghost" href="dashboard.html"><i class="bi bi-speedometer2 me-2"></i>经营概览（首页）</a>
+                    <a class="btn btn-ghost" href="vouchers-ledger.html"><i class="bi bi-journal-text me-2"></i>凭证与账簿</a>
+                    <a class="btn btn-ghost" href="tax-invoice.html"><i class="bi bi-receipt me-2"></i>税务与发票</a>
+                    <a class="btn btn-ghost" href="reports.html"><i class="bi bi-file-earmark-bar-graph me-2"></i>报表分析</a>
+                  </div>
+                  <div class="mt-3 safe small">如果未登录，这些入口会自动跳回本页面并提示原因。</div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="cardx p-3">
+                  <div class="t">操作建议</div>
+                  <div class="v">先登录再浏览</div>
+                  <div class="mt-2 help">建议从登录页开始进入系统，确保后续页面跳转与功能演示完整。</div>
+                  <div class="mt-3 hintbox">
+                    <div class="k">提示</div>
+                    <div class="v mt-1">首次使用可先打开 <span class="kbd">login.html</span>，输入账号密码后进入首页。</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+      (function () {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const io = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) en.target.classList.add('in-view'); }); }, { threshold: 0.14 });
+        document.querySelectorAll('.section').forEach(function (el) { io.observe(el); });
+
+        const authKey = 'fimds_auth';
+        const userKey = 'fimds_user';
+        const timeKey = 'fimds_time';
+        const allow = ['dashboard.html','vouchers-ledger.html','ar-ap.html','expense-reimburse.html','assets.html','tax-invoice.html','reports.html'];
+
+        function toast(message, kind) {
+          $('#toastDyn').remove();
+          const html = [
+            '<div id=\"toastDyn\" class=\"toast align-items-center text-bg-' + kind + ' border-0 position-fixed bottom-0 end-0 m-3\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" style=\"z-index:1080\">',
+            '  <div class=\"d-flex\">',
+            '    <div class=\"toast-body\"><i class=\"bi bi-info-circle me-2\"></i>' + message + '</div>',
+            '    <button type=\"button\" class=\"btn-close btn-close-white me-2 m-auto\" data-bs-dismiss=\"toast\" aria-label=\"关闭\"></button>',
+            '  </div>',
+            '</div>'
+          ].join('');
+          $('body').append(html);
+          bootstrap.Toast.getOrCreateInstance(document.getElementById('toastDyn'), { delay: 2400 }).show();
+        }
+
+        (function () {
+          const qs0 = new URLSearchParams(location.search);
+          if (qs0.get('logout') !== '1') return;
+          localStorage.removeItem(authKey);
+          localStorage.removeItem(userKey);
+          localStorage.removeItem(timeKey);
+          history.replaceState(null, '', 'login.html');
+          toast('已退出登录', 'secondary');
+        })();
+
+        function getNext() {
+          const qs = new URLSearchParams(location.search);
+          const raw = (qs.get('next') || '').trim();
+          if (!raw) return 'dashboard.html';
+          const file = raw.split('/').pop();
+          return allow.indexOf(file) >= 0 ? file : 'dashboard.html';
+        }
+
+        function setState() {
+          const ok = localStorage.getItem(authKey) === '1';
+          const u = localStorage.getItem(userKey) || '';
+          const t = localStorage.getItem(timeKey) || '';
+          $('#statePill').removeClass().addClass('badge rounded-pill ' + (ok ? 'text-bg-success' : 'text-bg-secondary')).text(ok ? '已登录' : '未登录');
+          $('#sessUser').text(ok ? u : '—');
+          $('#sessTime').text(ok && t ? t.replace('T', ' ').replace('Z', '') : '—');
+          $('#sessNext').text(getNext() === 'dashboard.html' ? '首页（dashboard.html）' : getNext());
+        }
+
+        function gotoNext() {
+          const target = getNext();
+          location.href = target;
+        }
+
+        function lockInfo() {
+          const t = Number(sessionStorage.getItem('fimds_lock_until') || 0);
+          const now = Date.now();
+          const on = t && now < t;
+          $('#lockHint').toggleClass('on', on);
+          $('#btnLogin').prop('disabled', on);
+          if (on) toast('暂时限制：请稍后再试', 'warning');
+        }
+
+        function bumpFail() {
+          const key = 'fimds_fail';
+          const v = Number(sessionStorage.getItem(key) || 0) + 1;
+          sessionStorage.setItem(key, String(v));
+          if (v >= 5) {
+            sessionStorage.setItem('fimds_lock_until', String(Date.now() + 30 * 1000));
+            sessionStorage.setItem(key, '0');
+          }
+        }
+
+        const next = getNext();
+        $('#nextHint').text('登录后将进入：' + (next === 'dashboard.html' ? '首页' : next));
+        setState();
+
+        const ok = localStorage.getItem(authKey) === '1';
+        if (ok) {
+          const qs2 = new URLSearchParams(location.search);
+          const rawNext2 = (qs2.get('next') || '').trim();
+          const hasNext2 = !!rawNext2;
+          $('#statePill').removeClass().addClass('badge rounded-pill text-bg-success').text('已登录');
+          $('#sessUser').text(localStorage.getItem(userKey) || '');
+          if (hasNext2) {
+            toast('已登录，正在跳转…', 'success');
+            window.setTimeout(function () { gotoNext(); }, reduceMotion ? 0 : 460);
+          }
+        }
+
+        $('#btnToggle').on('click', function () {
+          const $p = $('#p');
+          const isPwd = $p.attr('type') === 'password';
+          $p.attr('type', isPwd ? 'text' : 'password');
+          $(this).html(isPwd ? '<i class=\"bi bi-eye-slash\"></i>' : '<i class=\"bi bi-eye\"></i>');
+        });
+
+        $('#p').on('keydown', function (e) {
+          const caps = e.getModifierState && e.getModifierState('CapsLock');
+          $('#caps').toggleClass('on', !!caps);
+        });
+
+        $('#btnClear').on('click', function () {
+          localStorage.removeItem(authKey);
+          localStorage.removeItem(userKey);
+          localStorage.removeItem(timeKey);
+          setState();
+          toast('已退出登录', 'secondary');
+        });
+
+        $('#btnGoHome').on('click', function () {
+          if (localStorage.getItem(authKey) !== '1') { toast('请先登录', 'warning'); return; }
+          location.href = 'dashboard.html';
+        });
+
+        $('#loginForm').on('submit', function (e) {
+          e.preventDefault();
+          lockInfo();
+          if ($('#btnLogin').prop('disabled')) return;
+          const u = ($('#u').val() || '').trim();
+          const p = ($('#p').val() || '').trim();
+          const uOk = atob('cmVueXVkYQ==');
+          const pOk = atob('MTIzNDU2');
+          if (u === uOk && p === pOk) {
+            localStorage.setItem(authKey, '1');
+            localStorage.setItem(userKey, u);
+            localStorage.setItem(timeKey, new Date().toISOString());
+            setState();
+            toast('登录成功，正在跳转…', 'success');
+            window.setTimeout(function () { gotoNext(); }, reduceMotion ? 0 : 520);
+            return;
+          }
+          bumpFail();
+          lockInfo();
+          toast('账号或密码错误', 'danger');
+          $('#p').focus().select();
+        });
+
+        lockInfo();
+      })();
+    </script>
+  </body>
+</html>
